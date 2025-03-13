@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Coding Hub</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            /* Dark text for readability */
+            background-color: #ffffff;
+            /* White background */
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+
+
+        /* Sections */
+        section {
+            padding: 40px 0;
+        }
+
+        section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #000000;
+            /* Black headings */
+        }
+
+        /* Flexbox Layout for Items */
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            /* Space between items */
+            justify-content: space-between;
+            /* Distribute items evenly */
+        }
+
+        /* Item Styling */
+        .item {
+            background: #f9f9f9;
+            /* Light gray background for items */
+            border: 1px solid #cccccc;
+            /* Gray border */
+            border-radius: 5px;
+            padding: 15px;
+            width: calc(33.33% - 20px);
+            /* Three items per row */
+            height: 325px;
+            /* Fixed height */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Distribute content evenly */
+        }
+
+        @media (max-width: 1024px) {
+            .item {
+                width: calc(50% - 20px);
+                /* Two items per row on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .item {
+                width: 100%;
+                /* One item per row on small screens */
+            }
+        }
+
+        .item h3 {
+            font-size: 1.2rem;
+            color: #000000;
+            /* Black title */
+            margin-bottom: 10px;
+        }
+
+        .item p {
+            font-size: 0.9rem;
+            color: #666666;
+            /* Dark gray description */
+            flex-grow: 1;
+            /* Allow description to take up remaining space */
+        }
+
+        .item a {
+            color: #000000;
+            /* Black links */
+            text-decoration: none;
+        }
+
+        .item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Video Thumbnail */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            /* Height of the thumbnail */
+            background: #cccccc;
+            /* Gray background for thumbnails */
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.8);
+            /* Semi-transparent black play icon */
+        }
+
+        /* Modal for Video */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            /* Dark modal background */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal iframe {
+            width: 80%;
+            max-width: 800px;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+        }
+     /* Back Button */
+     .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1001; /* Ensure it's above other content */
+        }
+
+        .back-button:hover {
+            background-color: #333333;
+        }
+
+    </style>
+</head>
+
+<body>
+     <!-- Back Button -->
+     <button><a href="{{ url_for('home') }}" class="back-button">Back</a></button>
+    <!-- Main Content -->
+    <main class="content">
+        <!-- Tutorials Section -->
+        <section id="tutorials" class="tutorials">
+            <div class="container">
+                <h2 >Tutorials</h2>
+                <div class="item-container">
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/rfscVS0vtbw')">
+                            <img src="https://i.ytimg.com/vi/rfscVS0vtbw/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Introduction to Python</a></h3>
+                        <p>Learn the basics of Python programming, including variables, loops, and functions.</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/_uQrJ0TkZlc')">
+                            <img src="https://i.ytimg.com/vi/_uQrJ0TkZlc/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Data Structures in Python</a></h3>
+                        <p>Understand how to use lists, dictionaries, sets, and tuples effectively.</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail"
+                            onclick="openModal('https://www.youtube.com/embed/videoseries?list=PLhQjrBD2T3817j24-GogXmWqO5Q5vYy0V')">
+                            <img src="https://i.ytimg.com/vi/OvKCESUCWII/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Programming with Python</a></h3>
+                        <p>A Harvard University course that teaches Python fundamentals through hands-on
+                            problem-solving.</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/UrsmFxEIp5k')">
+                            <img src="https://i.ytimg.com/vi/UrsmFxEIp5k/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Python for Beginners</a></h3>
+                        <p>A beginner-friendly tutorial covering Python basics and practical examples.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+<section id="projects" class="projects">
+    <div class="container">
+        <h2>Projects</h2>
+        <div class="item-container">
+            <!-- Build a Chatbot -->
+            <div class="item">
+                <a href="https://realpython.com/" target="_blank">
+                    <img src="https://realpython.com/static/real-python-placeholder-2.bccfadebd073.jpg" alt="realpython" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://realpython.com/" target="_blank">realpython</a></h3>
+                <p>Real Python provides hands-on projects to practice and enhance Python skills.</p>
+            </div>
+
+            <!-- Create a Web Scraper -->
+            <div class="item">
+                <a href="https://www.codewars.com/" target="_blank">
+                    <img src="https://assets-global.website-files.com/62e3ee10882dc50bcae8d07a/634816d46fc4a32b2a583416_codewars-og-image.png" alt="codewars" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://www.codewars.com/" target="_blank">codewars</a></h3>
+                <p>Codewars offers coding challenges and projects to improve programming skills through problem-solving.</p>
+            </div>
+
+            <!-- Develop a REST API -->
+            <div class="item">
+                <a href="https://leetcode.com/problemset/" target="_blank">
+                    <img src="https://miro.medium.com/v2/resize:fit:1118/1*xwh3VrV-PAG89ROdLj6oXg.png" alt="leetcode" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://leetcode.com/problemset/" target="_blank">leetcode</a></h3>
+                <p>LeetCode provides a problem set for practicing coding challenges and preparing for technical interviews.</p>
+            </div>
+
+            <!-- Automate Daily Tasks -->
+            <div class="item">
+                <a href="https://projecteuler.net/archives" target="_blank">
+                    <img src="https://th.bing.com/th/id/OIP.5goO9F5jZYCkcuOFdudqSwHaDt?rs=1&pid=ImgDetMain" alt="projecteuler" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://projecteuler.net/archives  1" target="_blank">projecteuler</a></h3>
+                <p>Project Euler offers challenging mathematical and computational problems to solve with programming.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Resources Section -->
+<section id="resources" class="resources">
+    <div class="container">
+        <h2>Resources</h2>
+        <div class="item-container">
+            <!-- Python Crash Course -->
+            <div class="item">
+                <a href="https://pythonspot.com/beginner/" target="_blank">
+                    <img src="https://prod-discovery.edx-cdn.org/cdn-cgi/image/width=auto,height=auto,quality=75,format=webp/media/course/image/6eb80165-2611-405e-9307-a38c664907e6-37fd78a9a856.small.jpeg" alt="pythonspot" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://pythonspot.com/beginner/" target="_blank">pythonspot</a></h3>
+                <p>Introduction to Python programming.</p>
+            </div>
+
+            <!-- Automate the Boring Stuff with Python -->
+            <div class="item">
+                <a href="https://www.w3schools.com/python/" target="_blank">
+                    <img src="https://cdn.knoji.com/images/logo/w3schools1.jpg?fit=contain&trim=true&flatten=true&extend=25&width=1200&height=630" alt="w3schools" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://www.w3schools.com/python/" target="_blank">w3schools</a></h3>
+                <p>Learn Python for automating tasks.</p>
+            </div>
+
+            <!-- Fluent Python -->
+            <div class="item">
+                <a href="https://www.learnpython.org/" target="_blank">
+                    <img src="https://th.bing.com/th/id/OIP.BibxFDe8Rt0MG-wA9gbQtgHaD8?rs=1&pid=ImgDetMain" alt="learnpython" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://www.learnpython.org/" target="_blank">Learnpython</a></h3>
+                <p>A deep dive into Python's advanced features and best practices.</p>
+            </div>
+
+            <!-- Think Python -->
+            <div class="item">
+                <a href="https://realpython.com/" target="_blank">
+                    <img src="https://realpython.com/static/real-python-placeholder-2.bccfadebd073.jpg" alt="Think Python" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://realpython.com/" target="_blank">Realpython</a></h3>
+                <p>An introduction to programming using Python, focusing on computational thinking.</p>
+            </div>
+
+            <!-- CS50's Introduction to Programming with Python -->
+            <div class="item">
+                <a href="https://www.geeksforgeeks.org/python-programming-language-tutorial/" target="_blank">
+                    <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210702175749/20210702175652.gif" alt="geeksforgeeks" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                </a>
+                <h3><a href="https://www.geeksforgeeks.org/python-programming-language-tutorial/" target="_blank">geeksforgeeks</a></h3>
+                <p>A complete Python tutorial from basics to advanced on GeeksforGeeks.</p>
+            </div>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Modal for Video -->
+    <div id="videoModal" class="modal">
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+        <button onclick="closeModal()"
+            style="position: absolute; top: 20px; right: 20px; background: #ffffff; color: #000000; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Close</button>
+    </div>
+
+
+
+    <script>
+        // JavaScript to handle modal functionality
+        function openModal(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = videoUrl;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = ''; // Stop the video when closing
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

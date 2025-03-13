@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List and Calendar</title>
+    <style>
+        body {
+            display: flex;
+            font-family: 'Arial', sans-serif;
+            justify-content: center;
+            margin: 30px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .todo, .calendar {
+            width: 48%;
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .calendar table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .calendar td {
+            width: 14%;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .calendar td:hover {
+            background-color: #f0f4f7;
+        }
+        .calendar td.green {
+            background-color: #a4e1a1;
+            color: white;
+        }
+        .calendar td.orange {
+            background-color: #ffcc66;
+            color: white;
+        }
+        .calendar td.red {
+            background-color: #ff6666;
+            color: white;
+        }
+        .todo input[type="text"],
+        .todo input[type="date"] {
+            padding: 12px;
+            width: calc(70% - 10px);
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        .todo input[type="text"]:focus,
+        .todo input[type="date"]:focus {
+            border-color: #5cb85c;
+            outline: none;
+        }
+        .todo button {
+            padding: 12px;
+            width: calc(30% - 10px);
+            border-radius: 5px;
+            background: linear-gradient(135deg, #5cb85c, #4cae4c);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .todo button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #taskList {
+            max-height: 300px; /* Fixed height for scrollable task list */
+            overflow-y: auto; /* Enable vertical scrollbar */
+            padding-right: 10px; /* Space for scrollbar */
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center; /* Align text and button vertically */
+            justify-content: space-between; /* Space between text and button */
+            word-wrap: break-word; /* Break long words */
+            white-space: normal; /* Allow text to wrap */
+            min-height: 50px; /* Minimum height for each task item */
+        }
+        li.completed {
+            background-color: #d3ffd3; /* Green background for completed tasks */
+        }
+        .task-text {
+            flex: 1; /* Allow the task text to take remaining space */
+            overflow-wrap: break-word; /* Break long words */
+            word-break: break-word; /* Break long words */
+            margin-right: 10px; /* Add space between text and button */
+        }
+        .remove-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+            flex-shrink: 0; /* Prevent the button from shrinking */
+        }
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .calendar-header h3 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+        .calendar-header button:hover {
+            color: #5cb85c;
+        }
+        .task-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center; /* Align items vertically */
+        }
+        .task-input-row input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        .task-input-row input[type="date"] {
+            width: 150px;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        .task-message {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .addtask {
+            padding: 12px;
+            width: 100px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #5cb85c, #4cae4c);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: -8px;
+        }
+        .addtask:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="todo">
+        <h2>To-Do List</h2>
+        <div class="header" id="current-date-header"></div>
+        <div class="task-input-row">
+            <input type="text" id="taskInput" placeholder="Add a new task...">
+            <input type="date" id="taskDate" />
+            <button class="addtask" onclick="addTask()">Add Task</button>
+        </div>
+        <div class="task-message" id="taskMessage"></div>
+        <ul id="taskList"></ul>
+    </div>
+    <div class="calendar">
+        <h2>Calendar</h2>
+        <div class="calendar-header">
+            <button onclick="previousMonth()">❮</button>
+            <h3 id="calendar-month-year">March 2025</h3>
+            <button onclick="nextMonth()">❯</button>
+        </div>
+        <table id="calendarTable"></table>
+    </div>
+</div>
+
+<script>
+    let tasks = {}; // Store tasks as { date: [{ text: string, completed: boolean, color: string }] }
+    let calendarDates = {}; // Store calendar completion data as { date: { completedTasks: number, totalTasks: number } }
+    let selectedDate = null; // Store the selected date to show respective tasks
+    let selectedYear = new Date().getFullYear();
+    let selectedMonth = new Date().getMonth(); // 0 = January, 11 = December
+
+    // Fetch tasks from the backend
+    async function fetchTasks() {
+        try {
+            const response = await fetch('/get_todos');
+            const data = await response.json();
+            if (data.success) {
+                tasks = {};
+                calendarDates = {}; // Reset calendarDates
+                data.todos.forEach(todo => {
+                    const dateKey = todo.task_date;
+                    if (!tasks[dateKey]) {
+                        tasks[dateKey] = [];
+                    }
+                    tasks[dateKey].push({
+                        text: todo.task,
+                        completed: todo.completed,
+                        color: todo.color || '#a4e1a1', // Default color if not provided
+                        id: todo._id
+                    });
+
+                    // Update calendarDates for the task's date
+                    if (!calendarDates[dateKey]) {
+                        calendarDates[dateKey] = { completedTasks: 0, totalTasks: 0 };
+                    }
+                    calendarDates[dateKey].totalTasks++;
+                    if (todo.completed) {
+                        calendarDates[dateKey].completedTasks++;
+                    }
+                });
+                updateTaskList(selectedDate);
+                generateCalendar();
+            }
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    }
+
+    // Add a task to the list
+    async function addTask() {
+        const taskInput = document.getElementById('taskInput');
+        const taskDateInput = document.getElementById('taskDate');
+        const taskText = taskInput.value.trim();
+        const taskDate = taskDateInput.value;
+
+        if (taskText === '' || taskDate === '') {
+            alert('Please enter a task and select a date!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/add_todo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    task: taskText,
+                    task_date: taskDate,
+                    color: '#a4e1a1' // Default color for new tasks
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                taskInput.value = ''; // Clear input
+                taskDateInput.value = ''; // Clear date
+                fetchTasks(); // Refresh tasks
+            }
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
+    }
+
+    // Toggle task completion
+    async function toggleTaskCompletion(dateKey, index) {
+        const task = tasks[dateKey][index];
+        try {
+            const response = await fetch('/complete_todo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    todo_id: task.id
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                fetchTasks(); // Refresh tasks
+            }
+        } catch (error) {
+            console.error('Error completing task:', error);
+        }
+    }
+
+    // Remove a task
+    async function removeTask(dateKey, index) {
+        const task = tasks[dateKey][index];
+        try {
+            const response = await fetch('/delete_todo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    todo_id: task.id
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                fetchTasks(); // Refresh tasks
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    }
+
+    // Generate the calendar for the selected month and year
+    function generateCalendar() {
+        const calendar = document.getElementById('calendarTable');
+        const currentDate = new Date(selectedYear, selectedMonth);
+        
+        const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+        const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1).getDay();
+
+        let day = 1;
+        let calendarHTML = '<thead><tr>';
+        
+        // Weekday names (Sun, Mon, etc.)
+        const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        weekDays.forEach(day => {
+            calendarHTML += `<th>${day}</th>`;
+        });
+        calendarHTML += '</tr></thead><tbody><tr>';
+
+        // Empty cells for days before the first day of the month
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            calendarHTML += '<td></td>';
+        }
+
+        // Generate days of the month
+        for (let i = firstDayOfMonth; day <= daysInMonth; i++) {
+            if (i % 7 === 0 && i !== 0) {
+                calendarHTML += '</tr><tr>';
+            }
+
+            let className = ''; // Default no color
+
+            // Calculate the percentage of completed tasks
+            const dateKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            if (calendarDates[dateKey]) {
+                const completedTasks = calendarDates[dateKey].completedTasks;
+                const totalTasks = calendarDates[dateKey].totalTasks;
+                const completionPercentage = (completedTasks / totalTasks) * 100;
+
+                if (completionPercentage === 100) {
+                    className = 'green'; // All tasks completed
+                } else if (completionPercentage >= 50) {
+                    className = 'orange'; // 50% or more completed
+                } else {
+                    className = 'red'; // Less than 50% completed
+                }
+            } else if (tasks[dateKey] && tasks[dateKey].length > 0) {
+                // If there are tasks but no completion data, mark as red
+                className = 'red';
+            }
+
+            calendarHTML += `<td class="${className}" onclick="viewTasks('${dateKey}')">${day}</td>`;
+            day++;
+        }
+
+        // Fill empty cells for the last week
+        while (calendarHTML.split('<tr>').length - 1 < 6) {
+            calendarHTML += '<td></td>';
+        }
+
+        calendarHTML += '</tr></tbody>';
+        calendar.innerHTML = calendarHTML;
+
+        // Update the header with current month and year
+        const monthYearHeader = document.getElementById('calendar-month-year');
+        const monthName = currentDate.toLocaleString('default', { month: 'long' });
+        monthYearHeader.textContent = `${monthName} ${selectedYear}`;
+    }
+
+    // Update the task list for the selected date
+    function updateTaskList(dateKey) {
+        const taskList = document.getElementById('taskList');
+        const taskMessage = document.getElementById('taskMessage');
+        taskList.innerHTML = ''; // Clear the list before updating
+
+        if (tasks[dateKey] && tasks[dateKey].length > 0) {
+            // Format the date as "DD-MM-YY"
+            const [year, month, day] = dateKey.split('-');
+            const formattedDate = `${day}-${month}-${year.slice(-2)}`; // e.g., 05-03-25
+            taskMessage.textContent = `Tasks for ${formattedDate}:`;
+
+            tasks[dateKey].forEach((task, index) => {
+                const li = document.createElement('li');
+                li.style.textDecoration = task.completed ? 'line-through' : 'none';
+                li.style.backgroundColor = task.color; // Set background color from task color
+                li.className = task.completed ? 'completed' : '';
+                li.onclick = () => toggleTaskCompletion(dateKey, index);
+
+                // Add task text
+                const taskText = document.createElement('div');
+                taskText.className = 'task-text';
+                taskText.textContent = task.text;
+                li.appendChild(taskText);
+
+                // Add a remove button to delete task
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'Remove';
+                removeBtn.className = 'remove-btn';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation(); // Prevent triggering the task click event
+                    removeTask(dateKey, index);
+                };
+                li.appendChild(removeBtn);
+
+                taskList.appendChild(li);
+            });
+        } else {
+            // Format the date as "DD-MM-YY"
+            const [year, month, day] = dateKey.split('-');
+            const formattedDate = `${day}-${month}-${year.slice(-2)}`; // e.g., 05-03-25
+            taskMessage.textContent = `No tasks for ${formattedDate}.`;
+        }
+    }
+
+    // View tasks for a specific calendar date
+    function viewTasks(dateKey) {
+        selectedDate = dateKey;
+        updateTaskList(dateKey); // Show tasks for the selected date
+    }
+
+    // Navigate to the previous month
+    function previousMonth() {
+        selectedMonth--;
+        if (selectedMonth < 0) {
+            selectedMonth = 11;
+            selectedYear--;
+        }
+        generateCalendar();
+    }
+
+    // Navigate to the next month
+    function nextMonth() {
+        selectedMonth++;
+        if (selectedMonth > 11) {
+            selectedMonth = 0;
+            selectedYear++;
+        }
+        generateCalendar();
+    }
+
+    // Initialize the calendar and fetch tasks on page load
+    window.onload = function () {
+        generateCalendar();
+        fetchTasks();
+    };
+</script>
+</body>
+</html>

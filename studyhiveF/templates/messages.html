@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - StudyHive</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #bb86fc;
+            --error-color: #cf6679;
+            --success-color: #03dac6;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-primary);
+        }
+
+        .navbar {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--bg-tertiary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--accent-color);
+        }
+
+        .messages-container {
+            display: flex;
+            flex: 1;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            margin: 20px auto;
+            width: 95%;
+            max-width: 1200px;
+            height: calc(100vh - 100px);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .conversations-list {
+            width: 350px;
+            border-right: 1px solid var(--bg-tertiary);
+            overflow-y: auto;
+            background-color: var(--bg-secondary);
+        }
+
+        .conversation-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-tertiary);
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .new-message-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .new-message-btn:hover {
+            background-color: rgba(187, 134, 252, 0.1);
+        }
+
+        .conversation-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--bg-tertiary);
+            position: relative;
+        }
+
+        .conversation-item:hover {
+            background-color: var(--bg-tertiary);
+            transform: translateX(5px);
+        }
+
+        .conversation-item.active {
+            background-color: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--bg-primary);
+            transition: transform 0.3s ease;
+        }
+
+        .conversation-item:hover .avatar {
+            transform: scale(1.1);
+        }
+
+        .conversation-info {
+            flex: 1;
+        }
+
+        .conversation-username {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .last-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-primary);
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 18px;
+            word-wrap: break-word;
+            position: relative;
+            animation: messageAppear 0.3s ease;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.received {
+            background-color: var(--bg-tertiary);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.sent {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--bg-secondary);
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+        }
+
+        .send-button {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            background-color: var(--bg-tertiary);
+            cursor: default;
+            transform: none;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .empty-state h2 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-header h2 {
+            color: var(--accent-color);
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal button.cancel {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal button.start {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+        }
+
+        .modal button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* Message Timestamp */
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Online Status Indicator */
+        .online-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            margin-left: 8px;
+        }
+
+        .offline-status {
+            background-color: var(--text-secondary);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 20px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+            width: 250px;
+        }
+
+        .search-button {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
+        }
+
+        .search-results-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-result-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .search-result-item .avatar {
+            margin-right: 12px;
+        }
+
+        .search-result-item .username {
+            font-weight: 600;
+        }
+
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+        <h1>Messages</h1>
+        <div class="search-container">
+            <input type="text" id="user-search" placeholder="Search users..." class="search-input">
+            <button class="search-button" onclick="searchUsers()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="messages-container">
+        <div class="conversations-list">
+            <div class="conversation-header">
+                <span class="username">{{ username }}</span>
+                <button class="new-message-btn" onclick="showNewMessageModal()">
+                    <i class="fas fa-edit"></i> New Message
+                </button>
+            </div>
+            <div id="conversations"></div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="empty-state">
+                <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 20px; color: var(--accent-color);"></i>
+                <h2>Your Messages</h2>
+                <p>Send private messages to other users</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="newMessageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Message</h2>
+            </div>
+            <input type="text" id="recipientUsername" placeholder="Enter username">
+            <div class="modal-buttons">
+                <button class="cancel" onclick="hideNewMessageModal()">Cancel</button>
+                <button class="start" onclick="startNewConversation()">Start Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Modal -->
+    <div class="modal" id="searchResultsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Search Results</h2>
+            </div>
+            <div id="search-results" class="search-results-container">
+                <!-- Search results will be populated here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel" onclick="hideSearchResultsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentConversationId = null;
+
+        // Connect to WebSocket
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket');
+            loadConversations();
+        });
+
+        // Handle incoming messages
+        socket.on('new_message', (data) => {
+            if (data.conversation_id === currentConversationId) {
+                appendMessage(data.content, false, new Date(data.timestamp));
+                markConversationRead(currentConversationId);
+            }
+            loadConversations();
+        });
+
+        // Load conversations
+        async function loadConversations() {
+            const response = await fetch('/api/conversations');
+            const conversations = await response.json();
+            
+            const conversationsDiv = document.getElementById('conversations');
+            conversationsDiv.innerHTML = '';
+            
+            conversations.forEach(conv => {
+                const div = document.createElement('div');
+                div.className = `conversation-item${conv.id === currentConversationId ? ' active' : ''}`;
+                div.onclick = () => loadMessages(conv.id, conv.other_user);
+                
+                const unreadBadge = conv.unread_count > 0 
+                    ? `<span class="unread-badge">${conv.unread_count}</span>` 
+                    : '';
+                
+                div.innerHTML = `
+                    <div class="avatar">${conv.other_user[0].toUpperCase()}</div>
+                    <div class="conversation-info">
+                        <div class="conversation-username">${conv.other_user}</div>
+                        <div class="last-message">${conv.last_message || 'No messages yet'}</div>
+                    </div>
+                    ${unreadBadge}
+                `;
+                
+                conversationsDiv.appendChild(div);
+            });
+        }
+
+        // Load messages for a conversation
+        async function loadMessages(conversationId, otherUser) {
+            currentConversationId = conversationId;
+            
+            const chatArea = document.getElementById('chatArea');
+            chatArea.innerHTML = `
+                <div class="chat-header">
+                    <div class="avatar">${otherUser[0].toUpperCase()}</div>
+                    <span class="username">${otherUser}</span>
+                    <div class="online-status"></div>
+                </div>
+                <div class="messages" id="messagesList"></div>
+                <div class="message-input-container">
+                    <input type="text" class="message-input" id="messageInput" placeholder="Type your message...">
+                    <button class="send-button" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send</span>
+                    </button>
+                </div>
+            `;
+
+            const response = await fetch(`/api/messages/${conversationId}`);
+            const messages = await response.json();
+            
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            messages.forEach(msg => {
+                appendMessage(msg.content, msg.sender === '{{ username }}', new Date(msg.timestamp));
+            });
+            
+            messagesList.scrollTop = messagesList.scrollHeight;
+            markConversationRead(conversationId);
+            
+            const input = document.getElementById('messageInput');
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            input.focus();
+        }
+
+        // Send a new message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            socket.emit('send_message', {
+                conversation_id: currentConversationId,
+                content: content
+            });
+            
+            appendMessage(content, true, new Date());
+            input.value = '';
+            
+            loadConversations();
+        }
+
+        // Append a message to the messages list
+        function appendMessage(content, isSent, timestamp) {
+            const messagesList = document.getElementById('messagesList');
+            const div = document.createElement('div');
+            div.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            const time = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            div.innerHTML = `
+                ${content}
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesList.appendChild(div);
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+
+        // Mark conversation as read
+        function markConversationRead(conversationId) {
+            socket.emit('mark_read', { conversation_id: conversationId });
+        }
+
+        // Show new message modal
+        function showNewMessageModal() {
+            document.getElementById('newMessageModal').style.display = 'flex';
+            document.getElementById('recipientUsername').focus();
+        }
+
+        // Hide new message modal
+        function hideNewMessageModal() {
+            document.getElementById('newMessageModal').style.display = 'none';
+            document.getElementById('recipientUsername').value = '';
+        }
+
+        // Start a new conversation
+        async function startNewConversation() {
+            const username = document.getElementById('recipientUsername').value.trim();
+            
+            if (!username) return;
+            
+            const response = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            
+            const result = await response.json();
+            
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+            
+            hideNewMessageModal();
+            loadConversations();
+            loadMessages(result.id, username);
+        }
+
+        // Search for users
+        function searchUsers() {
+            const searchTerm = document.getElementById('user-search').value.trim();
+            
+            if (!searchTerm) {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            fetch(`/api/search_users?query=${encodeURIComponent(searchTerm)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const searchResults = document.getElementById('search-results');
+                    searchResults.innerHTML = '';
+                    
+                    if (data.users && data.users.length > 0) {
+                        data.users.forEach(user => {
+                            const div = document.createElement('div');
+                            div.className = 'search-result-item';
+                            div.onclick = () => {
+                                hideSearchResultsModal();
+                                startConversationWithUser(user.username);
+                            };
+                            
+                            div.innerHTML = `
+                                <div class="avatar">${user.username[0].toUpperCase()}</div>
+                                <span class="username">${user.username}</span>
+                            `;
+                            
+                            searchResults.appendChild(div);
+                        });
+                    } else {
+                        searchResults.innerHTML = '<div class="no-results">No users found</div>';
+                    }
+                    
+                    showSearchResultsModal();
+                })
+                .catch(error => {
+                    console.error('Error searching users:', error);
+                    alert('An error occurred while searching for users');
+                });
+        }
+        
+        // Show search results modal
+        function showSearchResultsModal() {
+            document.getElementById('searchResultsModal').style.display = 'flex';
+        }
+        
+        // Hide search results modal
+        function hideSearchResultsModal() {
+            document.getElementById('searchResultsModal').style.display = 'none';
+        }
+        
+        // Start conversation with a user from search results
+        function startConversationWithUser(username) {
+            document.getElementById('recipientUsername').value = username;
+            showNewMessageModal();
+        }
+        
+        // Add event listener for search input to allow searching with Enter key
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('user-search');
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchUsers();
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const newMessageModal = document.getElementById('newMessageModal');
+            const searchResultsModal = document.getElementById('searchResultsModal');
+            
+            if (event.target === newMessageModal) {
+                hideNewMessageModal();
+            }
+            
+            if (event.target === searchResultsModal) {
+                hideSearchResultsModal();
+            }
+        }
+    </script>
+</body>
+</html> 

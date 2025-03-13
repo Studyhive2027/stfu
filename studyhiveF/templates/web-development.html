@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Development Hub</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            /* Dark text for readability */
+            background-color: #ffffff;
+            /* White background */
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+
+
+        /* Sections */
+        section {
+            padding: 40px 0;
+        }
+
+        section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #000000;
+            /* Black headings */
+        }
+
+        /* Flexbox Layout for Items */
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            /* Space between items */
+            justify-content: space-between;
+            /* Distribute items evenly */
+        }
+
+        /* Item Styling */
+        .item {
+            background: #f9f9f9;
+            /* Light gray background for items */
+            border: 1px solid #cccccc;
+            /* Gray border */
+            border-radius: 5px;
+            padding: 15px;
+            width: calc(33.33% - 20px);
+            /* Three items per row */
+            height: 325px;
+            /* Fixed height */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Distribute content evenly */
+        }
+
+        @media (max-width: 1024px) {
+            .item {
+                width: calc(50% - 20px);
+                /* Two items per row on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .item {
+                width: 100%;
+                /* One item per row on small screens */
+            }
+        }
+
+        .item h3 {
+            font-size: 1.2rem;
+            color: #000000;
+            /* Black title */
+            margin-bottom: 10px;
+        }
+
+        .item p {
+            font-size: 0.9rem;
+            color: #666666;
+            /* Dark gray description */
+            flex-grow: 1;
+            /* Allow description to take up remaining space */
+        }
+
+        .item a {
+            color: #000000;
+            /* Black links */
+            text-decoration: none;
+        }
+
+        .item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Video Thumbnail */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            /* Height of the thumbnail */
+            background: #cccccc;
+            /* Gray background for thumbnails */
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.8);
+            /* Semi-transparent black play icon */
+        }
+
+        /* Modal for Video */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            /* Dark modal background */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal iframe {
+            width: 80%;
+            max-width: 800px;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+        }
+     /* Back Button */
+     .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1001; /* Ensure it's above other content */
+        }
+
+        .back-button:hover {
+            background-color: #333333;
+        }
+
+    </style>
+</head>
+
+<body>
+     <!-- Back Button -->
+     <button><a href="{{ url_for('home') }}" class="back-button">Back</a></button>
+
+    <!-- Main Content -->
+    <main class="content">
+        <!-- Tutorials Section -->
+        <section id="tutorials" class="tutorials">
+            <div class="container">
+                <h2>Tutorials</h2>
+                <div class="item-container">
+                    <!-- HTML & CSS Basics -->
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/UB1O30fR-EE')">
+                            <img src="https://i.ytimg.com/vi/UB1O30fR-EE/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">HTML & CSS Basics</a></h3>
+                        <p>Learn the fundamentals of HTML and CSS for building web pages.</p>
+                    </div>
+
+                    <!-- CSS Crash Course for Beginners -->
+                    <div class="item">
+                        <div class="video-thumbnail"
+                            onclick="openModal('https://www.youtube.com/embed/videoseries?list=PLhQjrBD2T380xvFSUmToMMzERZ3qB5Ueu')">
+                            <img src="https://i.ytimg.com/vi/Nn7EX3zkGUo/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">CSS Crash Course for Beginners</a></h3>
+                        <p>A comprehensive playlist covering CSS fundamentals and advanced topics.</p>
+                    </div>
+
+                    <!-- JavaScript for Web Development -->
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/PkZNo7MFNFg')">
+                            <img src="https://i.ytimg.com/vi/PkZNo7MFNFg/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">JavaScript for Web Development</a></h3>
+                        <p>Learn how to add interactivity to your websites using JavaScript.</p>
+                    </div>
+
+                    <!-- Introduction to React.js -->
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/bMknfKXIFA8')">
+                            <img src="https://i.ytimg.com/vi/bMknfKXIFA8/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Introduction to React.js</a></h3>
+                        <p>Get started with React.js, a popular JavaScript library for building user interfaces.</p>
+                    </div>
+
+                    <!-- Building REST APIs with Node.js -->
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/gnsO8-xJ8rs')">
+                            <img src="https://i.ytimg.com/vi/gnsO8-xJ8rs/hqdefault.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Building REST APIs with Node.js</a></h3>
+                        <p>Learn how to build RESTful APIs using Node.js and Express.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2>Projects</h2>
+                <div class="item-container">
+                    <div class="item">
+                        <h3><a href="https://www.theodinproject.com/"target="_blank">
+                            
+                        <img src="https://cdn.dribbble.com/users/553013/screenshots/11118619/media/427d7a21a1b15a2e49ac3f09d588d80c.png" alt="theodinproject" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                        theodinproject</a></h3>
+                        <p>The Odin Project provides a free, hands-on full-stack web development curriculum..</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://codepen.io/" target="_blank">
+                            <img src="https://th.bing.com/th/id/R.9a1f6a68f258df916184771cf7275a48?rik=2SHrlJu1OupoqQ&riu=http%3a%2f%2fwww.getmecoding.com%2fwp-content%2fuploads%2f2021%2f10%2fBLOG-Codepen-Part-1.png&ehk=5IUgsA2GBSL3ToMEfNcRqscvv5B4p%2bL9H%2baKJ2QIGwM%3d&risl=&pid=ImgRaw&r=0" alt="codepen" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            codepen
+                                Bootstrap</a></h3>
+                        <p>CodePen is an online platform for creating, sharing, and testing front-end code snippets and projects.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://github.com/topics/web-development" target="_blank">
+                            <img src="https://logos-world.net/wp-content/uploads/2020/11/GitHub-Logo.png" alt="github" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            github</a></h3>
+                        <p>GitHub hosts web development projects, tools, and resources.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="resources">
+            <div class="container">
+                <h2>Resources</h2>
+                <div class="item-container">
+                    <div class="item">
+                        <h3><a href="https://developer.mozilla.org/en-US/docs/Web" target="_blank">
+                            <img src="https://i.pinimg.com/originals/1d/3e/26/1d3e2664eb3ae218f0499750be7722c9.jpg" alt="developer.mozilla" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            developer.mozilla</a></h3>
+                        <p>MDN Web Docs offers detailed web development guides for HTML, CSS, and JavaScript.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://css-tricks.com/" target="_blank">
+                            <img src="https://static1.makeuseofimages.com/wordpress/wp-content/uploads/2022/01/css-tips-and-tricks.jpg" alt="Chatbot Project" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            CSS-Tricks</a></h3>
+                        <p>CSS-Tricks offers tips, tutorials, and guides for mastering CSS and front-end web development.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://www.w3schools.com/sql/default.asp" target="_blank">
+                            <img src="https://cdn.knoji.com/images/logo/w3schools1.jpg?fit=contain&trim=true&flatten=true&extend=25&width=1200&height=630" alt="w3schools" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            w3schools</a></h3>
+                        <p>W3Schools offers easy SQL tutorials and examples for learning database querying.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://www.geeksforgeeks.org/web-development/" target="_blank">
+                            <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210702175749/20210702175652.gif" alt="geeksforgeeks" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            geeksforgeeks</a></h3>
+                        <p>GeeksforGeeks provides web development tutorials on HTML, CSS, JavaScript, and frameworks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Video -->
+    <div id="videoModal" class="modal">
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+        <button onclick="closeModal()"
+            style="position: absolute; top: 20px; right: 20px; background: #ffffff; color: #000000; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Close</button>
+    </div>
+
+    
+
+    <script>
+        // JavaScript to handle modal functionality
+        function openModal(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = videoUrl;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = ''; // Stop the video when closing
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

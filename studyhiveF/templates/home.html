@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha384-..." crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            /* Default text color for light mode */
+            background-color: #f9f9f9;
+            /* Default background for light mode */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background: rgb(255, 255, 255);
+            z-index: 1000;
+
+        }
+
+        .navbar p {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 35px;
+        }
+
+        /* Container Layout */
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+            margin-top: 60px;
+        }
+
+        /* Sidebar Styling */
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background: #cccccc;
+        }
+
+        /* Side Menu Bar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 70px;
+            /* Narrow sidebar */
+            background: #000000;
+            /* Black sidebar */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+            /* Reduced padding */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            transform: translateX(-70px);
+            /* Initially hidden */
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+            /* Show sidebar */
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: #cccccc;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 5px;
+            /* Add a 5px gap between the toggle button and the menu */
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            color: #cccccc;
+        }
+
+        .sidebar-menu i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-footer {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: 100px;
+            padding: 20px;
+            width: calc(100% - 100px);
+            display: flex;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .calendar-container,
+        .todo-container,
+        .book-container,
+        .expense-container,
+        .video-container {
+            flex: 1;
+            display: none;
+            height: 550px;
+        }
+
+        .calendar-container iframe {
+            border: solid 1px #777;
+            width: 100%;
+            height: 100%;
+        }
+
+        .todo-container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            overflow-y: hidden;
+            height: 550px;
+        }
+
+        .todo-header {
+            background-color: #272525;
+            padding: 15px;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .todo-input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .todo-addBtn {
+            padding: 10px;
+            background: #070707;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .todo-addBtn:hover {
+            background-color: #218838;
+        }
+
+        .todo-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            max-height: 370px;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+
+        .todo-list li {
+            background: #eee;
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-list li.todo-checked {
+            background: #888;
+            color: white;
+            text-decoration: line-through;
+        }
+
+        .todo-close {
+            cursor: pointer;
+            padding: 5px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+
+        .todo-close:hover {
+            background: darkred;
+        }
+
+        /* Book Container Styling */
+        /* Ensure the book container takes full width but does not create an internal scroll */
+        #book-container {
+            display: flex;
+            flex-direction: column;
+            /* Arrange items in a column */
+            justify-content: flex-start;
+            /* Align content to the top */
+            align-items: center;
+            /* Center horizontally */
+            width: 100%;
+            /* Full width */
+            min-height: 900px;
+            /* Increased height for full visibility */
+            margin: 0 auto;
+            /* Center horizontally */
+            padding: 20px;
+            /* Some spacing */
+        }
+
+        /* Increase width to match the previous layout */
+        .book-content {
+            background-color: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            /* Increased width (adjust if needed) */
+            max-width: 1100px;
+            /* Similar to previous layout */
+        }
+
+
+
+
+        .book-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .book-container select {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .book-container button {
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .book-container button:hover {
+            background-color: #218838;
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .pdf-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .open-pdf-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .open-pdf-btn:hover {
+            background: #0056b3;
+        }
+
+
+
+        /* Custom Scrollbar */
+        .exp-expenses-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .exp-expenses-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .exp-expenses-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .exp-expenses-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Video Container Styling */
+        .video-container {
+            display: none;
+            /* Hide by default */
+            width: 100%;
+            height: auto;
+            overflow: hidden !important;
+            /* Forcefully hide scrolling */
+            padding: 20px;
+            position: relative;
+            /* Ensure proper layout */
+        }
+
+        .video-section {
+            margin-bottom: 40px;
+            /* Space between video sections */
+        }
+
+        .video-section h1 {
+            font-family: Arial, Helvetica, sans-serif;
+            position: none;
+            /* Fix the heading */
+            top: 0;
+            /* Stick to the top */
+            background: white;
+            /* Ensure the heading is visible */
+            padding: 10px 0;
+            /* Add padding for better visibility */
+            z-index: 1;
+            /* Ensure the heading stays above the videos */
+        }
+
+        .video-section .video-scrollable {
+            display: flex;
+            overflow-x: auto;
+            /* Enable horizontal scrolling for videos */
+            gap: 20px;
+            /* Space between videos */
+            padding-bottom: 20px;
+            /* Add padding at the bottom */
+        }
+
+        .video-section iframe {
+            flex: 0 0 auto;
+            /* Prevent iframes from shrinking */
+            width: 560px;
+            height: 315px;
+        }
+
+
+        .video-container {
+            display: none;
+            /* Hide by default */
+            width: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            /* Dark background */
+            color: #ffffff;
+            /* Light text */
+        }
+
+        body.dark-mode .site-header {
+            background: #ffffff;
+            /* White header in dark mode */
+            color: #000000;
+            /* Black text */
+        }
+
+        body.dark-mode .hero-section {
+            background: linear-gradient(135deg, #333333, #121212);
+            /* Dark gradient */
+        }
+
+        body.dark-mode .hubs-section h2 {
+            color: #ffffff;
+            /* Light heading */
+        }
+
+        body.dark-mode .hub-item {
+            background: #1e1e1e;
+            /* Dark card background */
+            border-color: #333333;
+            /* Dark border */
+        }
+
+        body.dark-mode .hub-item h3 {
+            color: #ffffff;
+            /* Light title */
+        }
+
+        body.dark-mode .hub-item p {
+            color: #cccccc;
+            /* Light description */
+        }
+
+        body.dark-mode .hub-item a {
+            background: #ffffff;
+            /* White button */
+            color: #000000;
+            /* Black text */
+        }
+
+        body.dark-mode .hub-item a:hover {
+            background: #cccccc;
+            /* Light gray on hover */
+        }
+
+        body.dark-mode .site-footer {
+            background: #ffffff;
+            /* White footer in dark mode */
+            color: #000000;
+            /* Black text */
+        }
+
+        body.dark-mode .site-footer a {
+            color: #000000;
+            /* Black links */
+        }
+
+        /* Header */
+        .site-header {
+            background: #000000;
+            /* Black header */
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+
+            z-index: 1000;
+        }
+
+        .site-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .site-header p {
+            font-size: 1.2rem;
+        }
+
+        .header-container {
+            width: 100%;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .home-container {
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .home-container h2 {
+            font-size: 2rem;
+            margin-bottom: 00px;
+        }
+
+        .home-container p {
+            font-size: 1.2rem;
+            margin-bottom: 0px;
+        }
+
+
+
+        /* Hubs Section */
+        .hubs-section {
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            margin-top: 20px;
+        }
+
+        .hubs-section h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            color: #000000;
+            /* Default heading color for light mode */
+            transition: color 0.3s ease;
+        }
+
+        .hub-container {
+            display: flex;
+            justify-content: flex-start;
+            /* Align hubs from the left */
+            align-items: center;
+            gap: 10px;
+            /* Space between hubs */
+            flex-wrap: nowrap;
+            /* Keep all hubs in one row */
+            max-width: 100%;
+            /* Ensure full width usage */
+            overflow: hidden;
+            /* Remove scrolling */
+            margin-left: 78px;
+            /* Shift hubs to the right to avoid navbar */
+            padding: 0px 0;
+            /* Add some spacing above and below */
+        }
+
+
+        .hub-item {
+            background: #ffffff;
+            /* Default background for light mode */
+            border: 1px solid #cccccc;
+            /* Gray border */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            height: 300px;
+            /* Fixed height */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
+            flex-shrink: 0;
+            /* Prevent hubs from shrinking */
+
+            flex-shrink: 0;
+            /* Prevent hubs from shrinking */
+            max-width: 300px;
+            /* Set a max width to avoid expansion */
+        }
+
+        .hub-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hub-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #000000;
+            /* Default title color for light mode */
+            transition: color 0.3s ease;
+        }
+
+        .hub-item p {
+            font-size: 1rem;
+            color: #666666;
+            /* Default description color for light mode */
+            margin-bottom: 20px;
+            margin-top: 0px;
+            transition: color 0.3s ease;
+        }
+
+        .hub-item a {
+            display: inline-block;
+            background: #000000;
+            /* Default button color for light mode */
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .hub-item a:hover {
+            background: #333333;
+            /* Darker black on hover */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hub-item {
+                width: calc(50% - 40px);
+                /* Two items per row on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hub-item {
+                width: 100%;
+                /* One item per row on small screens */
+            }
+        }
+
+
+
+
+        
+    @media (max-width: 1024px) {
+        .hub-container {
+            grid-template-columns: repeat(2, 1fr) !important; /* 2 hubs per row for medium screens */
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hub-container {
+            grid-template-columns: repeat(1, 1fr) !important; /* 1 hub per row for small screens */
+        }
+    }
+
+/* Dark Mode for Hubs */
+body.dark-mode .hub-container {
+    background: #121212; /* Dark background */
+}
+
+/* Ensure each hub item has a dark background */
+body.dark-mode .hub-item {
+    background: #1e1e1e !important;  /* Dark background */
+    border: 1px solid #333 !important;  /* Darker border */
+    color: white !important;  /* Light text */
+}
+
+/* Lighten text inside hubs */
+body.dark-mode .hub-item h3 {
+    color: #ffffff !important; /* Light heading */
+}
+
+body.dark-mode .hub-item p {
+    color: #cccccc !important; /* Light description */
+}
+
+/* Adjust button styles inside hubs */
+body.dark-mode .hub-item a {
+    background: #ffffff !important; /* White button */
+    color: #000000 !important; /* Black text */
+}
+
+body.dark-mode .hub-item a:hover {
+    background: #cccccc !important; /* Light gray on hover */
+}
+
+
+</style>
+
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <!-- Header Section -->
+        <header class="site-header">
+            <div class="header-container">
+                <h1 style="font-family: 'poppins';">StudyHive</h1>
+                <!-- Sidebar Toggle Button -->
+                <button class="sidebar-toggle" onclick="toggleSidebar()"
+                    style="margin-top:-10px; font-size:15px;">☰</button>
+
+                <!-- Dark Mode Toggle Button -->
+                <button style="margin-top: -10px;" class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark
+                    Mode</button>
+            </div>
+        </header>
+    </div>
+
+
+
+
+
+    <div class="container" style="display: grid;
+    grid-template-columns: 1fr; /* Single column layout */
+    gap: 75px;">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar" style="width: 90px; margin-right: 100%;">
+            <ul class="sidebar-menu">
+                <li style="margin-top:75px;padding-top: 0;margin-left: 5px;margin-right: 18px;">
+                    <a href="#" onclick="toggleHome()"><i class="fa-solid fa-house"></i></a>Home
+                </li>
+                <li style="margin-left: 5px;margin-right: 18px;">
+                    <a href="#" onclick="toggleBookDiv()"><i class="fa-solid fa-book"></i></a>Book
+                </li>
+                <li style="margin-left: -1px;margin-right: 15px;">
+                    <a href="#" onclick="toggleCalendar()"><i class="fa-solid fa-calendar"></i></a>Calender
+                </li>
+                <li style="margin-left: 5px;margin-right: 18px;">
+                    <a href="#" onclick="toggleExpenseTracker()"><i class="fa-solid fa-money-bill"></i></a>Money
+                </li>
+                <li style="margin-left: 5px;margin-right: 18px;">
+                    <a href="#" onclick="toggleVideo()"><i class="fa-solid fa-video"></i></a>Courses
+                </li>
+                <li style="margin-left: 5px;margin-right: 18px;">
+                    <a href="{{ url_for('messages') }}"><i class="fa-solid fa-message"></i></a>Messages
+                </li>
+                <li style="margin-left: 5px;margin-right: 18px;">
+                    <a href="#" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i></a>Logout
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+
+            </div>
+        </div>
+
+        <!-- Updated Home Section -->
+        <div id="home-container" class="home-container">
+            <div style="margin-bottom: -105px;">
+                <h2></h2>
+                <h2>Welcome ☺, All-in-One Solution for Modern Learners...</h2>
+                <p>Why juggle multiple apps when you can have it all in one place? </p>
+                <p>Our platform combines learning, task management, and expense tracking to simplify your life and boost your productivity.</p></div>
+            
+
+                
+            
+  <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+  <script src="https://files.bpcontent.cloud/2025/02/12/15/20250212150302-UMZ2EUIB.js"></script>
+            
+
+            <!-- Hubs Section -->
+            <section id="hubs" class="hubs-section">
+                <div class="container" style="height: fit-content;">
+                    <div class="hub-container" style="
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 3 hubs per row on large screens */
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    margin-left: 59px;
+    padding-right: 0px;
+height: auto;
+    margin-top: 0px;
+">
+
+                        <!-- Study Materials Hub -->
+                        <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+                            <h3>Study Materials</h3>
+                            <p>Access a wide range of study materials, including PDFs, notes, and resources for all
+                                subjects.</p>
+                            <a href="#" onclick="toggleBookDiv()">Explore Materials</a>
+                        </div>
+
+                        <!-- Task Manager Hub -->
+                        <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+                            <h3>Task Manager</h3>
+                            <p>Organize your tasks, set deadlines, and stay on top of your to-do list with our task
+                                manager.</p>
+                            <a href="#" onclick="toggleCalendar()">Manage Tasks</a>
+                        </div>
+
+                        <!-- Expense Tracker Hub -->
+                        <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+                            <h3>Expense Tracker</h3>
+                            <p>Track your expenses, manage budgets, and analyze spending habits with our expense
+                                tracker.</p>
+                            <a href="#" onclick="toggleExpenseTracker()">Track Expenses</a>
+                        </div>
+
+                        <!-- Video Courses Hub -->
+                        <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+                            <h3>Video Courses</h3>
+                            <p>Learn from curated video courses and tutorials to enhance your skills and knowledge.</p>
+                            <a href="#" onclick="toggleVideo()">Watch Courses</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="content">
+
+            <div id="calendar-container" class="todo-list-cal" style="width: 1200px;height:fit-content;padding: 0px;">
+                <div id="todo-container"  style="display: none;height: 500px;padding: 0px">
+                    <iframe src="{{ url_for('todo_page') }}" width="100%" height="100%" style="border: none;padding: 0px"></iframe>
+                </div>
+            </div>
+           
+            
+
+            <!-- Expense Tracker -->
+            <div id="expense-container" class="expense-container"
+                style="display: none; justify-content: center; align-items: center; height: 100%;">
+                <style>
+                    /* CSS Reset */
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+
+                    /* Expense Tracker Styles */
+                    /* Center the Expense Tracker */
+                    /* Ensure the expense container takes full width but has a fixed height */
+                    .expense-container {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                        /* Full width */
+                        height: 600px;
+                        /* Fixed height to prevent page scrollbars */
+                        margin: 0 auto;
+                        /* Center horizontally */
+                        padding: 20px;
+                        /* Some spacing */
+                    }
+
+                    /* Ensure inner content scrolls if it overflows */
+                    .exp-container {
+                        background-color: #fff;
+                        color: #000;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                        width: 800px;
+                        /* Fixed width */
+                        height: 100%;
+                        /* Fit within parent container */
+                        overflow-y: auto;
+                        /* Enable internal scrolling */
+                    }
+
+
+
+                    .exp-container h1 {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        font-size: 28px;
+                        color: #333;
+                    }
+
+                    .exp-input-group {
+                        margin-bottom: 20px;
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+                    }
+
+                    .exp-input-group label {
+                        font-weight: bold;
+                        min-width: 100px;
+                    }
+
+                    .exp-input-group input {
+                        flex: 1;
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background-color: #fff;
+                        color: #000;
+                    }
+
+                    .exp-input-group input:focus {
+                        outline: none;
+                        border-color: #555;
+                    }
+
+                    .exp-btn {
+                        padding: 10px 20px;
+                        background-color: #333;
+                        color: #fff;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background-color 0.3s;
+                    }
+
+                    .exp-btn:hover {
+                        background-color: #555;
+                    }
+
+                    .exp-expenses-header {
+                        font-size: 22px;
+                        margin-bottom: 10px;
+                        color: #333;
+                        font-weight: bold;
+                    }
+
+                    .exp-expenses-list {
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        padding: 10px;
+                        background-color: #f9f9f9;
+                        height: 300px;
+                        /* Fixed height */
+                        overflow-y: auto;
+                        /* Enable scrolling if content overflows */
+                    }
+
+                    .exp-expenses-list ul {
+                        list-style-type: none;
+                    }
+
+                    .exp-expenses-list li {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 10px;
+                        border-bottom: 1px solid #ccc;
+                        background-color: #fff;
+                        transition: background-color 0.3s;
+                    }
+
+                    .exp-expenses-list li:hover {
+                        background-color: #f1f1f1;
+                    }
+
+                    .exp-expenses-list li:last-child {
+                        border-bottom: none;
+                    }
+
+                    .exp-remove-btn {
+                        background-color: #ff4d4d;
+                        color: #fff;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 5px 10px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: background-color 0.3s;
+                    }
+
+                    .exp-remove-btn:hover {
+                        background-color: #ff1a1a;
+                    }
+
+                    .exp-total-section {
+                        margin-top: 20px;
+                        font-weight: bold;
+                        text-align: right;
+                        padding: 10px;
+                        background-color: #f9f9f9;
+                        border-radius: 4px;
+                        border: 1px solid #ccc;
+                    }
+
+                    /* Custom Scrollbar */
+                    .exp-expenses-list::-webkit-scrollbar {
+                        width: 8px;
+                    }
+
+                    .exp-expenses-list::-webkit-scrollbar-track {
+                        background: #f1f1f1;
+                        border-radius: 4px;
+                    }
+
+                    .exp-expenses-list::-webkit-scrollbar-thumb {
+                        background: #888;
+                        border-radius: 4px;
+                    }
+
+                    .exp-expenses-list::-webkit-scrollbar-thumb:hover {
+                        background: #555;
+                    }
+                </style>
+
+                <div class="exp-container">
+                    <h1>Expense Tracker</h1>
+
+                    <!-- Total Balance Input -->
+                    <div class="exp-input-group">
+                        <label for="total-balance">Total Balance:</label>
+                        <input type="number" id="total-balance" placeholder="e.g., 5000" onchange="updateBalance()">
+                        <button class="exp-btn" onclick="updateBalance()">Set Balance</button>
+                    </div>
+
+                    <!-- Expense Input -->
+                    <div class="exp-input-group">
+                        <label for="expense-name">Expense Name:</label>
+                        <input type="text" id="expense-name" placeholder="e.g., Groceries">
+                        <label for="expense-amount">Amount:</label>
+                        <input type="number" id="expense-amount" placeholder="e.g., 100">
+                        <button class="exp-btn" onclick="addExpense()">Add Expense</button>
+                    </div>
+
+                    <!-- Expenses Header -->
+                    <div class="exp-expenses-header">Expenses</div>
+
+                    <!-- Expense List -->
+                    <div class="exp-expenses-list">
+                        <ul id="expense-list"></ul>
+                    </div>
+
+                    <!-- Total Expenses and Remaining Balance -->
+                    <div class="exp-total-section">
+                        <p>Total Expenses: ₹<span id="total-amount">0</span></p>
+                        <p>Remaining Balance: ₹<span id="remaining-balance">0</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Container -->
+            <div id="book-container" class="book-container" style="display: none;">
+                <div class="book-content">
+                    <h2>Study Materials</h2>
+                    <select id="year-select" onchange="loadBranches()">
+                        <option value="">Select Year</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
+
+                    <select id="branch-select" onchange="loadSubjects()" disabled>
+                        <option value="">Select Branch</option>
+                    </select>
+
+                    <select id="subject-select" onchange="loadChapters()" disabled>
+                        <option value="">Select Subject</option>
+                    </select>
+
+                    <select id="chapter-select" onchange="loadPDF()" disabled>
+                        <option value="">Select Chapter</option>
+                    </select>
+
+                    <div class="pdf-viewer">
+                        <iframe id="pdf-viewer" src="" width="100%" height="100%"></iframe>
+                    </div>
+                    <button class="open-pdf-btn" style="background-color: black;"  onclick="openPDFInNewTab()">Open PDF in New Tab</button>
+                </div>
+            </div>
+
+
+            <!-- Expense Tracker -->
+
+
+
+            <!-- Video Container -->
+            <!-- Video Container -->
+            <div id="video-container" class="video-container">
+                <!-- Hubs Section -->
+                <h1 style="display: inline;">Explore our Hubs</h1>
+                <section id="hubs" class="hubs-section">
+                    <div class="hub-container" style="
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 hubs per row */
+    gap: 20px; /* Space between hubs */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    overflow: hidden;
+    min-height: 500px; /* Ensures second row is visible */
+">
+
+                            <!-- Python Hub -->
+                            <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+
+                                <h3>Python Hub</h3>
+                                <p>Learn Python programming with tutorials, projects, and resources for beginners and
+                                    advanced users.</p>
+                                <a href="{{ url_for('pythonhub') }}">Visit Python Hub</a>
+                            </div>
+
+                            <!-- JavaScript Hub -->
+                            <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+
+                                <h3>JavaScript Hub</h3>
+                                <p>Master JavaScript with tutorials, projects, and resources for front-end and back-end
+                                    development.</p>
+                                <a href="{{ url_for('js') }}">Visit JavaScript Hub</a>
+                            </div>
+
+                            <!-- Web Development Hub -->
+                            <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+
+                                <h3>Web Development Hub</h3>
+                                <p>Build websites and web applications with HTML, CSS, JavaScript, and frameworks like
+                                    React.js.</p>
+                                <a href="{{ url_for('webdev') }}">Visit WebDevelopment Hub</a>
+                            </div>
+
+
+
+
+
+                            <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+
+                                <h3>Java Hub</h3>
+                                <p>Explore Java development with guides, exercises, and tools for all skill levels.</p>
+                                <a href="{{ url_for('java') }}">Visit Java Hub</a>
+                            </div>
+
+                        
+                            <div class="hub-item" style="
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: 320px; /* Fixed height to prevent overflow */
+    overflow: hidden; /* Hide extra text */
+    word-wrap: break-word; /* Ensure text wraps properly */
+">
+
+                                <h3>C-Language Hub</h3>
+                                <p>Learn C programming with tutorials, examples, and resources for beginners and experts.</p>
+                                <a href="{{ url_for('c') }}">Visit C Language Hub</a>
+                            </div>
+                            <div class="hub-item" style="
+                            background: #ffffff;
+                            border: 1px solid #cccccc;
+                            border-radius: 10px;
+                            padding: 20px;
+                            text-align: center;
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                            width: 100%;
+                            max-width: 300px;
+                            height: 320px; /* Fixed height to prevent overflow */
+                            overflow: hidden; /* Hide extra text */
+                            word-wrap: break-word; /* Ensure text wraps properly */
+                        ">
+                        
+                                <h3>CyberSecurity Hub</h3>
+                                <p>Master cybersecurity with hands-on exercises, expert tips, and essential resources.</p>
+                                <a href="{{ url_for('cyber') }}">Visit CyberSecurity Hub</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+
+
+            <script>
+                // Function to apply dark mode styles
+                function applyDarkMode(isDarkMode) {
+                    const body = document.body;
+                    const toggleButton = document.querySelector('.dark-mode-toggle');
+                    
+                    if (isDarkMode) {
+                        body.classList.add('dark-mode');
+                        toggleButton.textContent = '☀ Light Mode';
+                    } else {
+                        body.classList.remove('dark-mode');
+                        toggleButton.textContent = '🌙 Dark Mode';
+                    }
+                    
+                    // Update hubs
+                    updateHubDarkMode();
+                    
+                    // Update other containers
+                    const containers = [
+                        'todo-container',
+                        'calendar-container',
+                        'book-container',
+                        'expense-container',
+                        'video-container'
+                    ];
+                    
+                    containers.forEach(containerId => {
+                        const container = document.getElementById(containerId);
+                        if (container) {
+                            if (isDarkMode) {
+                                container.style.background = '#1e1e1e';
+                                container.style.color = '#ffffff';
+                            } else {
+                                container.style.background = '#ffffff';
+                                container.style.color = '#333';
+                            }
+                        }
+                    });
+                }
+
+                function toggleDarkMode() {
+                    const isDarkMode = !document.body.classList.contains('dark-mode');
+                    
+                    // Save preference
+                    localStorage.setItem('dark-mode', isDarkMode);
+                    
+                    // Apply dark mode
+                    applyDarkMode(isDarkMode);
+                }
+
+                // Function to update hubs in dark mode
+                function updateHubDarkMode() {
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+                    const hubs = document.querySelectorAll('.hub-item');
+                    
+                    hubs.forEach(hub => {
+                        if (isDarkMode) {
+                            hub.style.background = "#1e1e1e";
+                            hub.style.border = "1px solid #333";
+                            hub.style.color = "white";
+                            const heading = hub.querySelector('h3');
+                            if (heading) heading.style.color = "white";
+                            const paragraph = hub.querySelector('p');
+                            if (paragraph) paragraph.style.color = "#cccccc";
+                        } else {
+                            hub.style.background = "#ffffff";
+                            hub.style.border = "1px solid #cccccc";
+                            hub.style.color = "black";
+                            const heading = hub.querySelector('h3');
+                            if (heading) heading.style.color = "black";
+                            const paragraph = hub.querySelector('p');
+                            if (paragraph) paragraph.style.color = "#666666";
+                        }
+                    });
+                }
+
+                // Initialize dark mode on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+                    applyDarkMode(isDarkMode);
+                });
+
+                // Function to toggle sidebar
+                function toggleSidebar() {
+                    const sidebar = document.getElementById('sidebar');
+                    const main = document.getElementById('main');
+                    sidebar.classList.toggle('active');
+                    main.classList.toggle('shifted');
+                }
+
+                function confirmLogout() {
+                    // Show a confirmation dialog
+                    const confirmLogout = confirm("Are you sure you want to logout?");
+                    if (confirmLogout) {
+                        // Redirect to the logout route
+                        window.location.href = "/logout";
+                    }
+                }
+
+                // Function to toggle the calendar and to-do list
+               
+function toggleCalendar() {
+    document.getElementById("home-container").style.display = "none";
+    document.getElementById("calendar-container").style.display = "block";
+    document.getElementById("todo-container").style.display = "block";  // Show todo5.html content
+    document.getElementById("book-container").style.display = "none";
+    document.getElementById("expense-container").style.display = "none";
+    document.getElementById("video-container").style.display = "none";
+}
+
+
+                // Function to toggle the home container
+                function toggleHome() {
+                    document.getElementById("home-container").style.display = "block";
+                    document.getElementById("calendar-container").style.display = "none";
+                    document.getElementById("todo-container").style.display = "none";
+                    document.getElementById("book-container").style.display = "none";
+                    document.getElementById("expense-container").style.display = "none";
+                    document.getElementById("video-container").style.display = "none";
+                }
+
+                function toggleBookDiv() {
+                    document.getElementById("home-container").style.display = "none";
+                    document.getElementById("book-container").style.display = "flex"; // Ensure visibility
+                    document.getElementById("calendar-container").style.display = "none";
+                    document.getElementById("todo-container").style.display = "none";
+                    document.getElementById("expense-container").style.display = "none";
+                    document.getElementById("video-container").style.display = "none";
+
+                    // Ensure the page scrolls to the top when the book section is opened
+                    window.scrollTo(0, 0);
+                }
+
+
+
+                function toggleExpenseTracker() {
+                    document.getElementById("home-container").style.display = "none";
+                    document.getElementById("expense-container").style.display = "flex";
+                    document.getElementById("calendar-container").style.display = "none";
+                    document.getElementById("todo-container").style.display = "none";
+                    document.getElementById("book-container").style.display = "none";
+                    document.getElementById("video-container").style.display = "none";
+                }
+
+
+                // Function to toggle the expense tracker
+                function toggleVideo() {
+                    document.getElementById("home-container").style.display = "none";
+                    document.getElementById("expense-container").style.display = "none";
+                    document.getElementById("calendar-container").style.display = "none";
+                    document.getElementById("todo-container").style.display = "none";
+                    document.getElementById("book-container").style.display = "none";
+                    document.getElementById("video-container").style.display = "block";
+                }
+                // Function to toggle the video container
+                function toggleVideo() {
+                    document.getElementById("video-container").style.display = "block"; // Show the video container
+                    document.getElementById("book-container").style.display = "none";
+                    document.getElementById("calendar-container").style.display = "none";
+                    document.getElementById("todo-container").style.display = "none";
+                    document.getElementById("expense-container").style.display = "none";
+                    document.getElementById("home-container").style.display = "none";
+                }
+
+                
+    // Function to add a new To-Do item
+    function toDoNewElement() {
+        let inputValue = document.getElementById("todo-input").value.trim();
+        if (inputValue === '') {
+            alert("You must write something!");
+            return;
+        }
+
+        // Get current date in YYYY-MM-DD format
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const currentDate = `${year}-${month}-${day}`;
+
+        fetch('/add_todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                task: inputValue,
+                task_date: currentDate
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadTodos();
+                document.getElementById("todo-input").value = "";
+            } else {
+                alert("Failed to add task.");
+            }
+        });
+    }
+
+    // Function to load To-Do items
+    function loadTodos() {
+        fetch('/get_todos')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const todoList = document.getElementById("todo-list");
+                todoList.innerHTML = "";
+
+                data.todos.forEach(todo => {
+                    let li = document.createElement("li");
+                    li.innerHTML = `
+                        <span>${todo.task}</span>
+                        <span class='todo-close' onclick='toDoRemoveTask("${todo._id}")'>&times</span>
+                    `;
+                    if (todo.completed) {
+                        li.classList.add('todo-checked');
+                    }
+                    li.onclick = function () {
+                        completeTodo(todo._id);
+                    };
+                    todoList.appendChild(li);
+                });
+            }
+        });
+    }
+
+    // Function to mark a To-Do item as completed
+    function completeTodo(todoId) {
+        fetch('/complete_todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ todo_id: todoId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadTodos();
+            }
+        });
+    }
+
+    // Function to remove a To-Do item
+    function toDoRemoveTask(todoId) {
+        fetch('/delete_todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ todo_id: todoId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadTodos();
+            }
+        });
+    }
+
+    // Load To-Do items when the page loads
+    document.addEventListener('DOMContentLoaded', loadTodos);
+
+
+                // Function to load branches based on the selected year
+                function loadBranches() {
+                    const yearSelect = document.getElementById("year-select");
+                    const branchSelect = document.getElementById("branch-select");
+                    branchSelect.innerHTML = "<option value=''>Select Branch</option>";
+                    branchSelect.disabled = true;
+
+                    const year = yearSelect.value;
+                    if (year) {
+                        const branches = data[year].branches;
+                        for (const branch in branches) {
+                            const option = document.createElement("option");
+                            option.value = branch;
+                            option.textContent = branch;
+                            branchSelect.appendChild(option);
+                        }
+                        branchSelect.disabled = false;
+                    }
+                }
+
+                // Function to load subjects based on the selected branch
+                function loadSubjects() {
+                    const yearSelect = document.getElementById("year-select");
+                    const branchSelect = document.getElementById("branch-select");
+                    const subjectSelect = document.getElementById("subject-select");
+                    subjectSelect.innerHTML = "<option value=''>Select Subject</option>";
+                    subjectSelect.disabled = true;
+
+                    const year = yearSelect.value;
+                    const branch = branchSelect.value;
+                    if (year && branch) {
+                        const subjects = data[year].branches[branch].subjects;
+                        for (const subject in subjects) {
+                            const option = document.createElement("option");
+                            option.value = subject;
+                            option.textContent = subject;
+                            subjectSelect.appendChild(option);
+                        }
+                        subjectSelect.disabled = false;
+                    }
+                }
+
+                // Function to load chapters based on the selected subject
+                function loadChapters() {
+                    const yearSelect = document.getElementById("year-select");
+                    const branchSelect = document.getElementById("branch-select");
+                    const subjectSelect = document.getElementById("subject-select");
+                    const chapterSelect = document.getElementById("chapter-select");
+                    chapterSelect.innerHTML = "<option value=''>Select Chapter</option>";
+                    chapterSelect.disabled = true;
+
+                    const year = yearSelect.value;
+                    const branch = branchSelect.value;
+                    const subject = subjectSelect.value;
+                    if (year && branch && subject) {
+                        const chapters = data[year].branches[branch].subjects[subject];
+                        for (const chapter of chapters) {
+                            const option = document.createElement("option");
+                            option.value = chapter.link; // Use the external link as the value
+                            option.textContent = chapter.name; // Use the name as the display text
+                            chapterSelect.appendChild(option);
+                        }
+                        chapterSelect.disabled = false;
+                    }
+                }
+
+                // Function to load the PDF into the viewer
+                function loadPDF() {
+                    const chapterSelect = document.getElementById("chapter-select");
+                    const pdfViewer = document.getElementById("pdf-viewer");
+
+                    const pdfLink = chapterSelect.value;
+                    if (pdfLink) {
+                        if (isGoogleDriveLink(pdfLink)) {
+                            // Convert Google Drive link to embeddable format
+                            const embedLink = convertGoogleDriveLinkToEmbed(pdfLink);
+                            pdfViewer.src = embedLink;
+                        } else {
+                            // Use the normal link
+                            pdfViewer.src = pdfLink;
+                        }
+                    }
+                }
+
+                // Function to open the PDF in a new tab
+                function openPDFInNewTab() {
+                    const pdfLink = document.getElementById("chapter-select").value;
+                    if (pdfLink) {
+                        if (isGoogleDriveLink(pdfLink)) {
+                            // Open Google Drive link in a new tab
+                            window.open(pdfLink, "_blank", "noopener,noreferrer");
+                        } else {
+                            // Open normal link in a new tab
+                            window.open(pdfLink, "_blank", "noopener,noreferrer");
+                        }
+                    }
+                }
+
+                // Helper function to check if the link is a Google Drive link
+                function isGoogleDriveLink(link) {
+                    return link.includes("drive.google.com");
+                }
+
+                // Helper function to convert Google Drive link to embeddable format
+                function convertGoogleDriveLinkToEmbed(link) {
+                    // Extract the file ID from the Google Drive link
+                    const fileId = link.match(/\/file\/d\/([^\/]+)/)[1];
+                    return `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+
+               
+    // Function to add a new expense
+    function addExpense() {
+    const expenseName = document.getElementById('expense-name').value;
+    const expenseAmount = parseFloat(document.getElementById('expense-amount').value);
+
+    if (!expenseName || isNaN(expenseAmount) || expenseAmount <= 0) {
+        alert('Please enter valid expense details.');
+        return;
+    }
+
+    fetch('/update_balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expense_name: expenseName, expense_amount: expenseAmount }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadExpenses();
+            document.getElementById('remaining-balance').textContent = data.new_balance.toFixed(2);
+            document.getElementById('expense-name').value = '';
+            document.getElementById('expense-amount').value = '';
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+
+    // Function to load expenses
+    function loadExpenses() {
+        fetch('/get_expenses')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const expenseList = document.getElementById('expense-list');
+                expenseList.innerHTML = '';
+
+                let totalExpenses = 0;
+                data.expenses.forEach(expense => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${expense.expense_name}</span>
+                        <span>₹${expense.expense_amount.toFixed(2)}</span>
+                        <button class="exp-remove-btn" onclick="removeExpense('${expense._id}')">Remove</button>
+                    `;
+                    expenseList.appendChild(li);
+                    totalExpenses += expense.expense_amount;
+                });
+
+                document.getElementById('total-amount').textContent = totalExpenses.toFixed(2);
+                
+                // Get balance from the input field
+                const totalBalance = parseFloat(document.getElementById('total-balance').value) || 0;
+                const remainingBalance = totalBalance - totalExpenses;
+                document.getElementById('remaining-balance').textContent = remainingBalance.toFixed(2);
+            }
+        });
+    }
+
+    // Function to remove an expense
+    function removeExpense(expenseId) {
+    fetch('/reset_balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expense_id: expenseId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadExpenses();
+            document.getElementById('remaining-balance').textContent = data.new_balance.toFixed(2);
+        }
+    });
+}
+
+    // Function to update the balance
+    function updateBalance() {
+        const newBalance = parseFloat(document.getElementById('total-balance').value);
+        
+        if (isNaN(newBalance) || newBalance < 0) {
+            alert('Please enter a valid balance amount.');
+            return;
+        }
+        
+        fetch('/set_balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ balance: newBalance }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Balance updated successfully!');
+                loadExpenses(); // Refresh expenses to update remaining balance
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    function loadBalance() {
+    fetch('/get_balance')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('total-balance').value = data.balance.toFixed(2);
+            loadExpenses(); // Load expenses after balance is loaded
+        }
+    });
+}
+
+// Run this function when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadBalance();
+});
+
+
+
+    // Load expenses when the page loads
+    document.addEventListener('DOMContentLoaded', loadExpenses);
+
+
+                // Sample data with external PDF links
+                const data = {
+                    "1": {
+                        "branches": {
+                            "CSE": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+                            "CSE-AIML": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+                            "CSE-CYBER": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+                            "IT": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+                            "ECE": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+                            "EEE": {
+                                "subjects": {
+                                    "Maths": [
+                                        { name: "Matrices", link: "https://drive.google.com/file/d/1WvJqZ0lQc1rA3EXOhFIXzjqQgwXOkMs8/view" },
+                                        { name: "Eigenvalues and Eigen,vectors", link: "https://drive.google.com/file/d/1SR-0FhzulbzATisXnoUyWTsRLK5Gl6oa/view " },
+                                        { name: "Calculus", link: "https://drive.google.com/file/d/1D5UQZaCcrOFiqvLzuDZ8E1tFI9c6rxCc/view " },
+                                        { name: "Multivariable Calculus(Partial Differentiation and applications)", link: "https://drive.google.com/file/d/11m6hfLFxpCegb6TolgyOKYOvQjygVrzD/view " },
+                                        { name: "Multivariable Calculus (Integration) ", link: "https://drive.google.com/file/d/1tBAmzdXz3-gndF9KuuwNqvX3q6LZkXUE/view " }
+                                    ],
+                                    "Chemistry": [
+                                        { name: "Water and its treatmentChapter", link: "https://drive.google.com/file/d/1UPj_UyPBPiDsaX4b_uIyimGxoZPrb1De/view " },
+                                        { name: "Battery Chemistry & Corrosion", link: "https://drive.google.com/file/d/1mSPZqAvKu16EHc5toowKhFcYCi4j7DD9/view " },
+                                        { name: "Polymeric materials", link: "https://drive.google.com/file/d/1yJ6zTs2FsU1-YcR5bcL9FZCxJ2BSklfm/view " },
+                                        { name: "Energy Sources", link: "https://drive.google.com/file/d/15VRAzRiJrZsdl_OCiTZNvTvxWryVmzFl/view " },
+                                        { name: "Engineering Materials", link: "https://drive.google.com/file/d/1L1tg_QgdDLmUJzB2U_RW8VohLPbJj4N5/view " },
+                                    ],
+                                    "PPS": [
+                                        { name: "Introduction to Programming", link: "https://drive.google.com/file/d/1PGBf6QS_doH1sttefPRNVuklbUlFCpJh/view  " },
+                                        { name: "Arrays, Strings, Structures and Pointers", link: " https://drive.google.com/file/d/19NCZ1vt-GZil6WRvn65-DD6sARr1GUa7/view  " },
+                                        { name: "Preprocessor and File handling in C", link: "https://drive.google.com/file/d/1d1ugg-rhMJ8VdIehbwc-EtZX4gnNhDqX/view  " },
+                                        { name: "Function and Dynamic Memory Allocation", link: "https://drive.google.com/file/d/1drjuQXhHd8LJcDV93yPWW5g2hMAX8hUF/view  " },
+                                        { name: "Searching and Sorting", link: " https://drive.google.com/file/d/1kT9ACfx-NVg_-C1IOILIHL16IPjctxZJ/view  " },
+                                    ],
+                                    "BEE": [
+                                        { name: " D.C. Circuits", link: "https://drive.google.com/file/d/1-HZMIvCsGCYQ3Oc8FByNKsi2qXqKLeNk/view " },
+                                        { name: "A.C. Circuits", link: " https://drive.google.com/file/d/1eW2Jc6kShdNdizCR-9a7LYPVqur-PGDq/view " },
+                                        { name: "Transformers", link: "https://drive.google.com/file/d/1jURNxndRFk5s3kne4AltcwTcPX1qsoFb/view  " },
+                                        { name: "Electrical Machines", link: "https://drive.google.com/file/d/1w5x3RB0-xWZlbrNOlKe9CXBkQeuZjRZu/view  " },
+                                        { name: "Electrical Installations", link: " https://drive.google.com/file/d/1-gR6Mm8IJha8l1AEVI2OWmmLXUN67BkV/view  " },
+                                    ],
+                                    "EG": [
+                                        { name: " all Chapter", link: "https://drive.google.com/file/d/1qXb2cmv1UHkhoXGxwB79vm9JJc7HqGg1/view" },
+                                    ],
+                                    "ODEVC": [
+                                        { name: "First Order ODE", link: "https://drive.google.com/file/d/1ehk0-U4mZn6NPYSAjZodCJKvo_BG8jLu/view" },
+                                        { name: "Ordinary Differential Equations of Higher Order", link: "https://drive.google.com/file/d/1ozvm2EB_ipwC4x2B3RHD0tOdxzzp_Xu_/view " },
+                                        { name: "Laplace transforms", link: " https://drive.google.com/file/d/1vs4lzKiNMmafJGOIQyaPiWp682USZGY0/view " },
+                                        { name: "Vector Differentiation", link: "https://drive.google.com/file/d/1kvViepJe3uw01BibbFNG1aSF82QM87ct/view  " },
+                                        { name: "Vector Integration", link: " https://drive.google.com/file/d/1uCsSgyTyy2x0EQdmsoCBmodO3Q0nR_k9/view " },
+                                    ],
+                                    "EDC": [
+                                        { name: "Diodes", link: " https://drive.google.com/file/d/1MoZazs2eQvYr1x_6Me2Z-UFrn5p-uOuJ/view  " },
+                                        { name: "Diode Applications:, ", link: " https://drive.google.com/file/d/1zIdQo2XIoKuRJ2iD68t3xxEcVFgEdhTS/view  " },
+                                        { name: "Bipolar Junction Transistor", link: " https://drive.google.com/file/d/1jtBi38OhxdVy55ZFvUkWcQUaxEIe5aXs/view  " },
+                                        { name: "Junction Field Effect Transistor", link: " https://drive.google.com/file/d/1-P5jFsADbRQ8UzMyLQEE2VF1HHEJ8dXL/view  " },
+                                        { name: "Chapter 5", link: " https://drive.google.com/file/d/1_lycdZFr9fhGuX3kSjc2emA2P8UB9XNE/view  " },
+                                    ],
+                                    "English": [
+                                        { name: "Toasted English' by R.K.Narayan", link: " " },
+                                        { name: "Appro JRD' by Sudha Murthy", link: " " },
+                                        { name: "Lessons from Online Learning' by F.Haider Alvi", link: " " },
+                                        { name: "Art and Literature' by Abdul Kalam", link: " " },
+                                        { name: "Go, Kiss the World' by Subroto Bagchi", link: " " },
+                                    ],
+                                    "AP": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1XrYYeM1RYoRc-UxhfSMlm802KV83JLXh/view " },
+                                    ],
+                                }
+                            },
+
+                        },
+                    },
+                    "2": {
+                        "branches": {
+                            "CSE": {
+                                "subjects": {
+                                    "Digital Electronics": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1gnkpNxaJ_m4oGvT6hCGD0ipGhna50C7L/view?usp=drive_link" },
+                                    ],
+                                    "Data Structures": [
+                                        { name: "Introduction to DS", link: "https://drive.google.com/file/d/1ipnRXisXUmT2j8omS-gqm7ma2mQrcsMd/view" },
+                                        { name: "Dictionaries, ", link: "https://drive.google.com/file/d/1OPWwTUZVQ22aO0WPjwXr6aHwET5u3Yfo/view" },
+                                        { name: "Search Trees", link: "https://drive.google.com/file/d/1xgPGb3v-aoqk9E4Y3_ZnOAbP0qrDeZIC/view" },
+                                        { name: "Graphs", link: "https://drive.google.com/file/d/191N8hGKK2tiZbQTezhK_09ddJ1l9ELCC/view" },
+                                        { name: "Pattern Matching and Tries", link: "https://drive.google.com/file/d/13ACoxIgG6KXDtzLvPFhQ6DmvYUMLq6OU/view" },
+                                    ],
+                                    "COSM": [
+                                        { name: "all chapters", link: "https://www.scribd.com/document/690451358/Cosm-Full-Notes" },
+
+                                    ],
+                                    "OOPS through JAVA": [
+                                        { name: "java basics", link: "https://drive.google.com/file/d/1l6tTbXD1T26GWyMmOWMSsGHWcyPhQ9Dx/view" },
+                                        { name: "packages", link: "https://drive.google.com/file/d/1JiLQNeJPQiu538IuS0cMtNGjj5zvcxPZ/view" },
+                                        { name: "exception handling and multithreading", link: "https://drive.google.com/file/d/1rM_H1-_wDbAWmkfPwypWJX4ovX-9Z-JO/view" },
+                                        { name: "Event Handling", link: "https://drive.google.com/file/d/1KDKjm9nF7Xs71C6x5YZsz1lIVXlRII6I/view" },
+                                        { name: "Applets", link: "https://drive.google.com/file/d/1Vx5g7-gF9jNIlPlL8GFs68QfV7H3fYjP/view" },
+                                    ],
+                                    "COA": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/avn-institute-of-technology/computer-science-and-engineering/coa-notes-all-units/113579231" },
+
+                                    ],
+                                    "DM": [
+                                        { name: "Mathematical logic", link: "https://drive.google.com/file/d/1YvWaXvsXQge-DlCV6o5k4rrGhxcoYu7D/view" },
+                                        { name: "Set theory", link: "https://drive.google.com/file/d/1BMDlypAmtQvKuzTETpld6599h2-PbWg2/view" },
+                                        { name: "Algebraic Structures", link: "https://drive.google.com/file/d/1CcPhsDI9TIUv8ib_ltkeRUv90kEmAEnJ/view" },
+                                        { name: "Elementary Combinatorics", link: "https://drive.google.com/file/d/1HOJY09v4eHg-eVrHloyw4KLpMzjbjYHX/view" },
+                                        { name: "Graph Theory", link: "https://drive.google.com/file/d/1aRahpegDvGhk_qj7NxjuIMvO2et8KakI/view" },
+                                    ],
+                                    "BEFA": [
+                                        { name: "Introduction to Business and Economics", link: "https://drive.google.com/file/d/1eoIiQ3rU_uUKPROWByvLPBnO5bF5GL6S/view" },
+                                        { name: "Demand and Supply Analysis", link: "https://drive.google.com/file/d/1ep6MxJzdnE0ilw8zVNHUSO3Qxho4w-XW/view" },
+                                        { name: "Production, Cost, Market Structures & Pricing", link: "https://drive.google.com/file/d/1fAf3b-CcWmjYWYf47EhBaGGgzTeWgokP/view" },
+                                        { name: "Financial Accounting", link: "https://drive.google.com/file/d/1fCOSU31iQA2XigmpTLMKrcXMAkotpKaw/view" },
+                                        { name: " Financial Ratios Analysis", link: "https://drive.google.com/file/d/1fLfjIoAmXT5fG1wy7ZaGUkBw5N2HvWH1/view" },
+                                    ],
+                                    "OS": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/computer-science-and-engineering/os-notes-final/64733055" },
+                                    ],
+                                    "DBMS": [
+                                        { name: "all chapters", link: "https://mrcet.com/downloads/digital_notes/IT/IT_R22_DATABASE%20MANAGEMENT%20SYSTEMS%20DIGITAL-NOTES.pdf" },
+                                    ],
+                                    "SE": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/software-engineering/se-notes/69873362" },
+                                    ],
+                                }
+                            },
+                            "CSE-AIML": {
+                                "subjects": {
+                                    "Mathematical and Statistical Foundations": [
+                                        { name: "Chapter 1", link: "https://drive.google.com/file/d/12K0MhVhuN6kZIETEABkxpjwj-QtKHu-r/view" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "https://drive.google.com/file/d/10BhgFkixuVrSy9J9tP7ESPjH-6CZIALg/view" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Data Structures": [
+                                        { name: "Introduction to DS", link: "https://drive.google.com/file/d/1ipnRXisXUmT2j8omS-gqm7ma2mQrcsMd/view" },
+                                        { name: "Dictionaries, ", link: "https://drive.google.com/file/d/1OPWwTUZVQ22aO0WPjwXr6aHwET5u3Yfo/view" },
+                                        { name: "Search Trees", link: "https://drive.google.com/file/d/1xgPGb3v-aoqk9E4Y3_ZnOAbP0qrDeZIC/view" },
+                                        { name: "Graphs", link: "https://drive.google.com/file/d/191N8hGKK2tiZbQTezhK_09ddJ1l9ELCC/view" },
+                                        { name: "Pattern Matching and Tries", link: "https://drive.google.com/file/d/13ACoxIgG6KXDtzLvPFhQ6DmvYUMLq6OU/view" },
+                                    ],
+                                    "Automata Theory and Compiler Design": [
+                                        { name: "Chapter 1", link: "https://drive.google.com/file/d/1PrC3_M0gV4b1f_yA-4tIl2Kg-IVsO-JF/view" },
+                                        { name: "Chapter 2", link: "https://drive.google.com/file/d/1C0ksoH50gMkBj2wR5uDEg8I6Ndhk1EmB/view" },
+                                        { name: "Chapter 3", link: "https://drive.google.com/file/d/1jRLVYXCtxBKJVO72KpeA_vfg2STPwmsm/view" },
+                                        { name: "Chapter 4", link: "https://drive.google.com/file/d/15ZICYG-onnZ2guVLmFJgtsZSz9r3lVx2/view" },
+                                        { name: "Chapter 5", link: "https://drive.google.com/file/d/1EYGRl_RXq18aIWiKzq6PTvFqAvI64oHc/view" },
+                                    ],
+                                    "OOPS through JAVA": [
+                                        { name: "java basics", link: "https://drive.google.com/file/d/1l6tTbXD1T26GWyMmOWMSsGHWcyPhQ9Dx/view" },
+                                        { name: "packages", link: "https://drive.google.com/file/d/1JiLQNeJPQiu538IuS0cMtNGjj5zvcxPZ/view" },
+                                        { name: "exception handling and multithreading", link: "https://drive.google.com/file/d/1rM_H1-_wDbAWmkfPwypWJX4ovX-9Z-JO/view" },
+                                        { name: "Event Handling", link: "https://drive.google.com/file/d/1KDKjm9nF7Xs71C6x5YZsz1lIVXlRII6I/view" },
+                                        { name: "Applets", link: "https://drive.google.com/file/d/1Vx5g7-gF9jNIlPlL8GFs68QfV7H3fYjP/view" },
+                                    ],
+                                    "COA": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/avn-institute-of-technology/computer-science-and-engineering/coa-notes-all-units/113579231" },
+
+                                    ],
+                                    "DM": [
+                                        { name: "Mathematical logic", link: "https://drive.google.com/file/d/1YvWaXvsXQge-DlCV6o5k4rrGhxcoYu7D/view" },
+                                        { name: "Set theory", link: "https://drive.google.com/file/d/1BMDlypAmtQvKuzTETpld6599h2-PbWg2/view" },
+                                        { name: "Algebraic Structures", link: "https://drive.google.com/file/d/1CcPhsDI9TIUv8ib_ltkeRUv90kEmAEnJ/view" },
+                                        { name: "Elementary Combinatorics", link: "https://drive.google.com/file/d/1HOJY09v4eHg-eVrHloyw4KLpMzjbjYHX/view" },
+                                        { name: "Graph Theory", link: "https://drive.google.com/file/d/1aRahpegDvGhk_qj7NxjuIMvO2et8KakI/view" },
+                                    ],
+                                    "Introduction to AI": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "OS": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/computer-science-and-engineering/os-notes-final/64733055" },
+                                    ],
+                                    "DBMS": [
+                                        { name: "all chapters", link: "https://mrcet.com/downloads/digital_notes/IT/IT_R22_DATABASE%20MANAGEMENT%20SYSTEMS%20DIGITAL-NOTES.pdf" },
+                                    ],
+                                    "SE": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/software-engineering/se-notes/69873362" },
+                                    ],
+                                }
+                            },
+                            "CSE-CYBER": {
+                                "subjects": {
+                                    "Digital Electronics": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1gnkpNxaJ_m4oGvT6hCGD0ipGhna50C7L/view?usp=drive_link" },
+                                    ],
+                                    "Data Structures": [
+                                        { name: "Introduction to DS", link: "https://drive.google.com/file/d/1ipnRXisXUmT2j8omS-gqm7ma2mQrcsMd/view" },
+                                        { name: "Dictionaries, ", link: "https://drive.google.com/file/d/1OPWwTUZVQ22aO0WPjwXr6aHwET5u3Yfo/view" },
+                                        { name: "Search Trees", link: "https://drive.google.com/file/d/1xgPGb3v-aoqk9E4Y3_ZnOAbP0qrDeZIC/view" },
+                                        { name: "Graphs", link: "https://drive.google.com/file/d/191N8hGKK2tiZbQTezhK_09ddJ1l9ELCC/view" },
+                                        { name: "Pattern Matching and Tries", link: "https://drive.google.com/file/d/13ACoxIgG6KXDtzLvPFhQ6DmvYUMLq6OU/view" },
+                                    ],
+                                    "COSM": [
+                                        { name: "all chapters", link: "https://www.scribd.com/document/690451358/Cosm-Full-Notes" },
+
+                                    ],
+                                    "OOPS through JAVA": [
+                                        { name: "java basics", link: "https://drive.google.com/file/d/1l6tTbXD1T26GWyMmOWMSsGHWcyPhQ9Dx/view" },
+                                        { name: "packages", link: "https://drive.google.com/file/d/1JiLQNeJPQiu538IuS0cMtNGjj5zvcxPZ/view" },
+                                        { name: "exception handling and multithreading", link: "https://drive.google.com/file/d/1rM_H1-_wDbAWmkfPwypWJX4ovX-9Z-JO/view" },
+                                        { name: "Event Handling", link: "https://drive.google.com/file/d/1KDKjm9nF7Xs71C6x5YZsz1lIVXlRII6I/view" },
+                                        { name: "Applets", link: "https://drive.google.com/file/d/1Vx5g7-gF9jNIlPlL8GFs68QfV7H3fYjP/view" },
+                                    ],
+                                    "COA": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/avn-institute-of-technology/computer-science-and-engineering/coa-notes-all-units/113579231" },
+
+                                    ],
+                                    "DM": [
+                                        { name: "Mathematical logic", link: "https://drive.google.com/file/d/1YvWaXvsXQge-DlCV6o5k4rrGhxcoYu7D/view" },
+                                        { name: "Set theory", link: "https://drive.google.com/file/d/1BMDlypAmtQvKuzTETpld6599h2-PbWg2/view" },
+                                        { name: "Algebraic Structures", link: "https://drive.google.com/file/d/1CcPhsDI9TIUv8ib_ltkeRUv90kEmAEnJ/view" },
+                                        { name: "Elementary Combinatorics", link: "https://drive.google.com/file/d/1HOJY09v4eHg-eVrHloyw4KLpMzjbjYHX/view" },
+                                        { name: "Graph Theory", link: "https://drive.google.com/file/d/1aRahpegDvGhk_qj7NxjuIMvO2et8KakI/view" },
+                                    ],
+                                    "BEFA": [
+                                        { name: "Introduction to Business and Economics", link: "https://drive.google.com/file/d/1eoIiQ3rU_uUKPROWByvLPBnO5bF5GL6S/view" },
+                                        { name: "Demand and Supply Analysis", link: "https://drive.google.com/file/d/1ep6MxJzdnE0ilw8zVNHUSO3Qxho4w-XW/view" },
+                                        { name: "Production, Cost, Market Structures & Pricing", link: "https://drive.google.com/file/d/1fAf3b-CcWmjYWYf47EhBaGGgzTeWgokP/view" },
+                                        { name: "Financial Accounting", link: "https://drive.google.com/file/d/1fCOSU31iQA2XigmpTLMKrcXMAkotpKaw/view" },
+                                        { name: " Financial Ratios Analysis", link: "https://drive.google.com/file/d/1fLfjIoAmXT5fG1wy7ZaGUkBw5N2HvWH1/view" },
+                                    ],
+                                    "OS": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/computer-science-and-engineering/os-notes-final/64733055" },
+                                    ],
+                                    "Computer Networks": [
+                                        { name: "all chapters", link: "https://mrcet.com/downloads/digital_notes/CSE/III%20Year/AIML/COMPUTER%20NETWORKS-R22.pdf" },
+                                    ],
+                                    "SE": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/software-engineering/se-notes/69873362" },
+                                    ],
+                                }
+                            },
+                            "CSE-DATA SCIENCE": {
+                                "subjects": {
+                                    "Digital Electronics": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1gnkpNxaJ_m4oGvT6hCGD0ipGhna50C7L/view?usp=drive_link" },
+                                    ],
+                                    "Data Structures": [
+                                        { name: "Introduction to DS", link: "https://drive.google.com/file/d/1ipnRXisXUmT2j8omS-gqm7ma2mQrcsMd/view" },
+                                        { name: "Dictionaries, ", link: "https://drive.google.com/file/d/1OPWwTUZVQ22aO0WPjwXr6aHwET5u3Yfo/view" },
+                                        { name: "Search Trees", link: "https://drive.google.com/file/d/1xgPGb3v-aoqk9E4Y3_ZnOAbP0qrDeZIC/view" },
+                                        { name: "Graphs", link: "https://drive.google.com/file/d/191N8hGKK2tiZbQTezhK_09ddJ1l9ELCC/view" },
+                                        { name: "Pattern Matching and Tries", link: "https://drive.google.com/file/d/13ACoxIgG6KXDtzLvPFhQ6DmvYUMLq6OU/view" },
+                                    ],
+                                    "COSM": [
+                                        { name: "all chapters", link: "https://www.scribd.com/document/690451358/Cosm-Full-Notes" },
+
+                                    ],
+                                    "OOPS through JAVA": [
+                                        { name: "java basics", link: "https://drive.google.com/file/d/1l6tTbXD1T26GWyMmOWMSsGHWcyPhQ9Dx/view" },
+                                        { name: "packages", link: "https://drive.google.com/file/d/1JiLQNeJPQiu538IuS0cMtNGjj5zvcxPZ/view" },
+                                        { name: "exception handling and multithreading", link: "https://drive.google.com/file/d/1rM_H1-_wDbAWmkfPwypWJX4ovX-9Z-JO/view" },
+                                        { name: "Event Handling", link: "https://drive.google.com/file/d/1KDKjm9nF7Xs71C6x5YZsz1lIVXlRII6I/view" },
+                                        { name: "Applets", link: "https://drive.google.com/file/d/1Vx5g7-gF9jNIlPlL8GFs68QfV7H3fYjP/view" },
+                                    ],
+                                    "COA": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/avn-institute-of-technology/computer-science-and-engineering/coa-notes-all-units/113579231" },
+
+                                    ],
+                                    "DM": [
+                                        { name: "Mathematical logic", link: "https://drive.google.com/file/d/1YvWaXvsXQge-DlCV6o5k4rrGhxcoYu7D/view" },
+                                        { name: "Set theory", link: "https://drive.google.com/file/d/1BMDlypAmtQvKuzTETpld6599h2-PbWg2/view" },
+                                        { name: "Algebraic Structures", link: "https://drive.google.com/file/d/1CcPhsDI9TIUv8ib_ltkeRUv90kEmAEnJ/view" },
+                                        { name: "Elementary Combinatorics", link: "https://drive.google.com/file/d/1HOJY09v4eHg-eVrHloyw4KLpMzjbjYHX/view" },
+                                        { name: "Graph Theory", link: "https://drive.google.com/file/d/1aRahpegDvGhk_qj7NxjuIMvO2et8KakI/view" },
+                                    ],
+                                    "BEFA": [
+                                        { name: "Introduction to Business and Economics", link: "https://drive.google.com/file/d/1eoIiQ3rU_uUKPROWByvLPBnO5bF5GL6S/view" },
+                                        { name: "Demand and Supply Analysis", link: "https://drive.google.com/file/d/1ep6MxJzdnE0ilw8zVNHUSO3Qxho4w-XW/view" },
+                                        { name: "Production, Cost, Market Structures & Pricing", link: "https://drive.google.com/file/d/1fAf3b-CcWmjYWYf47EhBaGGgzTeWgokP/view" },
+                                        { name: "Financial Accounting", link: "https://drive.google.com/file/d/1fCOSU31iQA2XigmpTLMKrcXMAkotpKaw/view" },
+                                        { name: " Financial Ratios Analysis", link: "https://drive.google.com/file/d/1fLfjIoAmXT5fG1wy7ZaGUkBw5N2HvWH1/view" },
+                                    ],
+                                    "OS": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/computer-science-and-engineering/os-notes-final/64733055" },
+                                    ],
+                                    "DBMS": [
+                                        { name: "all chapters", link: "https://mrcet.com/downloads/digital_notes/IT/IT_R22_DATABASE%20MANAGEMENT%20SYSTEMS%20DIGITAL-NOTES.pdf" },
+                                    ],
+                                    "SE": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/software-engineering/se-notes/69873362" },
+                                    ],
+                                }
+                            },
+                            "IT": {
+                                "subjects": {
+                                    "Digital Electronics": [
+                                        { name: "all chapters", link: "https://drive.google.com/file/d/1gnkpNxaJ_m4oGvT6hCGD0ipGhna50C7L/view?usp=drive_link" },
+                                    ],
+                                    "Data Structures": [
+                                        { name: "Introduction to DS", link: "https://drive.google.com/file/d/1ipnRXisXUmT2j8omS-gqm7ma2mQrcsMd/view" },
+                                        { name: "Dictionaries, ", link: "https://drive.google.com/file/d/1OPWwTUZVQ22aO0WPjwXr6aHwET5u3Yfo/view" },
+                                        { name: "Search Trees", link: "https://drive.google.com/file/d/1xgPGb3v-aoqk9E4Y3_ZnOAbP0qrDeZIC/view" },
+                                        { name: "Graphs", link: "https://drive.google.com/file/d/191N8hGKK2tiZbQTezhK_09ddJ1l9ELCC/view" },
+                                        { name: "Pattern Matching and Tries", link: "https://drive.google.com/file/d/13ACoxIgG6KXDtzLvPFhQ6DmvYUMLq6OU/view" },
+                                    ],
+                                    "COSM": [
+                                        { name: "all chapters", link: "https://www.scribd.com/document/690451358/Cosm-Full-Notes" },
+
+                                    ],
+                                    "Computer Organization and Microprocessor": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Introduction to IoT": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "DM": [
+                                        { name: "Mathematical logic", link: "https://drive.google.com/file/d/1YvWaXvsXQge-DlCV6o5k4rrGhxcoYu7D/view" },
+                                        { name: "Set theory", link: "https://drive.google.com/file/d/1BMDlypAmtQvKuzTETpld6599h2-PbWg2/view" },
+                                        { name: "Algebraic Structures", link: "https://drive.google.com/file/d/1CcPhsDI9TIUv8ib_ltkeRUv90kEmAEnJ/view" },
+                                        { name: "Elementary Combinatorics", link: "https://drive.google.com/file/d/1HOJY09v4eHg-eVrHloyw4KLpMzjbjYHX/view" },
+                                        { name: "Graph Theory", link: "https://drive.google.com/file/d/1aRahpegDvGhk_qj7NxjuIMvO2et8KakI/view" },
+                                    ],
+                                    "BEFA": [
+                                        { name: "Introduction to Business and Economics", link: "https://drive.google.com/file/d/1eoIiQ3rU_uUKPROWByvLPBnO5bF5GL6S/view" },
+                                        { name: "Demand and Supply Analysis", link: "https://drive.google.com/file/d/1ep6MxJzdnE0ilw8zVNHUSO3Qxho4w-XW/view" },
+                                        { name: "Production, Cost, Market Structures & Pricing", link: "https://drive.google.com/file/d/1fAf3b-CcWmjYWYf47EhBaGGgzTeWgokP/view" },
+                                        { name: "Financial Accounting", link: "https://drive.google.com/file/d/1fCOSU31iQA2XigmpTLMKrcXMAkotpKaw/view" },
+                                        { name: " Financial Ratios Analysis", link: "https://drive.google.com/file/d/1fLfjIoAmXT5fG1wy7ZaGUkBw5N2HvWH1/view" },
+                                    ],
+                                    "OS": [
+                                        { name: "all chapters", link: "https://www.studocu.com/in/document/jawaharlal-nehru-technological-university-hyderabad/computer-science-and-engineering/os-notes-final/64733055" },
+                                    ],
+                                    "DBMS": [
+                                        { name: "all chapters", link: "https://mrcet.com/downloads/digital_notes/IT/IT_R22_DATABASE%20MANAGEMENT%20SYSTEMS%20DIGITAL-NOTES.pdf" },
+                                    ],
+                                    "Java Programming": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                }
+                            },
+                            "ECE": {
+                                "subjects": {
+                                    "Analog Circuits": [
+                                        { name: "BJT Biasing ", link: "" },
+                                        { name: "FET Amplifiers", link: "" },
+                                        { name: "Multistage Amplifiers", link: "" },
+                                        { name: "Feedback Amplifiers", link: "" },
+                                        { name: "Oscillators", link: "" },
+                                    ],
+                                    "Network analysis and Synthesis": [
+                                        { name: "Network Topology", link: "" },
+                                        { name: "Transient and Steady state analysis", link: "" },
+                                        { name: "Two port network parameters", link: "" },
+                                        { name: "Filters & Attenuators", link: "" },
+                                        { name: "Network Synthesis", link: "" },
+                                    ],
+                                    " Digital Logic Design": [
+                                        { name: "Number Systems", link: "" },
+                                        { name: "Minimization of Boolean functions", link: "" },
+                                        { name: "Combinational Logic Circuits", link: "" },
+                                        { name: "Registers and Counters", link: "" },
+                                        { name: "Sequential Machines", link: "" },
+                                    ],
+                                    "Signals and Systems": [
+                                        { name: "Signal Analysis", link: "" },
+                                        { name: "Fourier series", link: "" },
+                                        { name: "Signal Transmission through Linear Systems", link: "" },
+                                        { name: "Laplace Transform", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Probability Theory and Stochastic Processes": [
+                                        { name: "Probability & Random Variable", link: "" },
+                                        { name: "Operations on Single & Multiple Random Variables", link: "" },
+                                        { name: "Random Processes", link: "" },
+                                        { name: "Random Processes", link: "" },
+                                        { name: "Noise Sources & Information Theory", link: "" },
+                                    ],
+                                    "Numerical Methods and Complex Variables": [
+                                        { name: "Fourier Series & Fourier Transforms", link: "" },
+                                        { name: " Numerical Methods-I", link: "" },
+                                        { name: " Numerical Methods-II", link: "" },
+                                        { name: " Complex Differentiation", link: "" },
+                                        { name: "Complex Integration", link: "" },
+                                    ],
+                                    "Electromagnetic Fields and Transmission Lines": [
+                                        { name: "Electrostatics", link: "" },
+                                        { name: "Magnetostatics", link: "" },
+                                        { name: "Maxwell's Equations", link: "" },
+                                        { name: "EM Wave Characteristics", link: "" },
+                                        { name: "Transmission Lines", link: "" },
+                                    ],
+                                    "Analog and Digital Communications": [
+                                        { name: "Amplitude Modulation", link: "" },
+                                        { name: "Angle Modulation", link: "" },
+                                        { name: "Transmitters", link: "" },
+                                        { name: "Pulse Modulation", link: "" },
+                                        { name: "Digital Modulation Techniques", link: "" },
+                                    ],
+                                    " Linear and Digital IC Applications": [
+                                        { name: "Operational Amplifier", link: "" },
+                                        { name: "Op-Amp, IC-555 & IC565 Applications", link: "" },
+                                        { name: "Data Converters", link: "" },
+                                        { name: "Combinational Logic ICs", link: "" },
+                                        { name: "Sequential Logic IC's and Memories", link: "" },
+                                    ],
+                                    "Electronic Circuit Analysis": [
+                                        { name: "Large Signal Amplifiers", link: "" },
+                                        { name: "Tuned Amplifiers", link: "" },
+                                        { name: "Multivibrators", link: "" },
+                                        { name: "Time Base Generators", link: "" },
+                                        { name: "Synchronization and Frequency Division", link: "" },
+                                    ],
+                                }
+                            },
+                            "EEE": {
+                                "subjects": {
+                                    "Numerical Methods and Complex variables": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Electrical Machines-I": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Power System-I": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Analog Electronic Circuits": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Electro Magnetic Fields": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Solid Mechanics & Hydraulic Machines": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Measurements and Instrumentation": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Electrical Machines–II": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Digital Electronics": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                    "Power System-II": [
+                                        { name: "Chapter 1", link: "" },
+                                        { name: "Chapter 2", link: "" },
+                                        { name: "Chapter 3", link: "" },
+                                        { name: "Chapter 4", link: "" },
+                                        { name: "Chapter 5", link: "" },
+                                    ],
+                                }
+                            },
+                        }
+                    },
+
+                }
+                
+                
+               
+
+
+      </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+#book-container {
+    display: flex;
+    flex-direction: column; /* Arrange items in a column */
+    justify-content: flex-start; /* Align content to the top */
+    align-items: center; /* Center horizontally */
+    width: 100%; /* Full width */
+    min-height: 900px; /* Increased height for full visibility */
+    margin: 0 auto; /* Center horizontally */
+    padding: 20px; /* Some spacing */
+}
+
+/* Increase width to match the previous layout */
+.book-content {
+    background-color: #fff;
+    color: #000;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 90%; /* Increased width (adjust if needed) */
+    max-width: 1100px; /* Similar to previous layout */
+}
+
+
+.hub-container {
+    display: flex;
+    justify-content: flex-start; /* Align hubs from the left */
+    align-items: center;
+    gap: 10px; /* Space between hubs */
+    flex-wrap: nowrap; /* Keep all hubs in one row */
+    max-width: 100%; /* Ensure full width usage */
+    overflow: hidden; /* Remove scrolling */
+    margin-left: 78px; /* Shift hubs to the right to avoid navbar */
+    padding: 20px 0; /* Add some spacing above and below */
+}
+
+ <!-- Video Courses Hub -->
+                <div class="hub-item">
+                    <h3>Video Courses</h3>
+                    <p>Learn from curated video courses and tutorials to enhance your skills and knowledge.</p>
+                    <a href="#" onclick="toggleVideo()">Watch Courses</a>
+                </div>

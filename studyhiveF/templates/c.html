@@ -1,0 +1,330 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Coding Hub</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            /* Dark text for readability */
+            background-color: #ffffff;
+            /* White background */
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+
+
+        /* Sections */
+        section {
+            padding: 40px 0;
+        }
+
+        section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #000000;
+            /* Black headings */
+        }
+
+        /* Flexbox Layout for Items */
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            /* Space between items */
+            justify-content: space-between;
+            /* Distribute items evenly */
+        }
+
+        /* Item Styling */
+        .item {
+            background: #f9f9f9;
+            /* Light gray background for items */
+            border: 1px solid #cccccc;
+            /* Gray border */
+            border-radius: 5px;
+            padding: 15px;
+            width: calc(33.33% - 20px);
+            /* Three items per row */
+            height: 325px;
+            /* Fixed height */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Distribute content evenly */
+        }
+
+        @media (max-width: 1024px) {
+            .item {
+                width: calc(50% - 20px);
+                /* Two items per row on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .item {
+                width: 100%;
+                /* One item per row on small screens */
+            }
+        }
+
+        .item h3 {
+            font-size: 1.2rem;
+            color: #000000;
+            /* Black title */
+            margin-bottom: 10px;
+        }
+
+        .item p {
+            font-size: 0.9rem;
+            color: #666666;
+            /* Dark gray description */
+            flex-grow: 1;
+            /* Allow description to take up remaining space */
+        }
+
+        .item a {
+            color: #000000;
+            /* Black links */
+            text-decoration: none;
+        }
+
+        .item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Video Thumbnail */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            /* Height of the thumbnail */
+            background: #cccccc;
+            /* Gray background for thumbnails */
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.8);
+            /* Semi-transparent black play icon */
+        }
+
+        /* Modal for Video */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            /* Dark modal background */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal iframe {
+            width: 80%;
+            max-width: 800px;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+        }
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1001; /* Ensure it's above other content */
+        }
+
+        .back-button:hover {
+            background-color: #333333;
+        }
+
+    </style>
+</head>
+
+<body>
+     <!-- Back Button -->
+     <button><a href="{{ url_for('home') }}" class="back-button">Back</a></button>
+
+    <!-- Main Content -->
+    <main class="content">
+        <!-- Tutorials Section -->
+        <section id="tutorials" class="tutorials">
+            <div class="container">
+                <h2>Tutorials</h2>
+                <div class="item-container">
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/irqbmMNs2Bo')">
+                            <img src="https://i.ytimg.com/vi/irqbmMNs2Bo/hq720.jpg" alt="Video Thumbnail">
+
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">C Language Tutorial for Beginners by Apna College</a></h3>
+                        <p>Learn C basics: variables, loops, and functions.</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/KJgsSFOSQv0')">
+                            <img src="https://i.ytimg.com/vi/KJgsSFOSQv0/hq720.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">C Programming Tutorial for Beginners</a></h3>
+                        <p>Intro to core C programming concepts.</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/87SH2Cn0s9A')">
+                            <img src="https://i.ytimg.com/vi/87SH2Cn0s9A/hq720.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">Programming with C </a></h3>
+                        <p>A brief and beginner-friendly C course!</p>
+                    </div>
+                    <div class="item">
+                        <div class="video-thumbnail" onclick="openModal('https://www.youtube.com/embed/aZb0iu4uGwA')">
+                            <img src="https://i.ytimg.com/vi/aZb0iu4uGwA/hq720.jpg" alt="Video Thumbnail">
+                            <span class="play-icon">▶</span>
+                        </div>
+                        <h3><a href="#">C for Beginners</a></h3>
+                        <p>A beginner-friendly tutorial covering C basics and practical examples.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2>Projects</h2>
+                <div class="item-container">
+                    <!-- Build a Chatbot -->
+                    <div class="item">
+                        <h3><a href="https://www.hackerrank.com/domains/c" target="_blank">
+                            <img src="https://th.bing.com/th/id/OIP.2QTcbQJp-Jkfyx8JXOpZ9QHaEO?rs=1&pid=ImgDetMain" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            hackerrank C practice</a></h3>
+                        <p>HackerRank offers C programming challenges to practice and improve coding skills.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://www.codechef.com/roadmap/c-dsa" target="_blank">
+                            <img src="https://theindianwire.com/wp-content/uploads/2018/06/codechef-logo-1.jpg" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            codechef</a></h3>
+                        <p>CodeChef offers C and DSA challenges with a structured learning roadmap.</p>
+                    </div>
+                    <div class="item">
+                        <h3><a href="https://leetcode.com/" target="_blank">
+                            <img src="https://miro.medium.com/v2/resize:fit:1118/1*xwh3VrV-PAG89ROdLj6oXg.png" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            leetcode</a></h3>
+                        <p>LeetCode offers C programming challenges and DSA problems for practice and interview prep.</p>
+                    </div>
+
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="resources">
+            <div class="container">
+                <h2>Resources</h2>
+                <div class="item-container">
+                    <!-- Python Crash Course -->
+                    <div class="item">
+                        
+                        <h3><a href="https://www.geeksforgeeks.org/c-programming-language/" target="_blank">
+                            <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210702175749/20210702175652.gif" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            Geek for geeks</a></h3>
+                        <p>GeeksforGeeks offers C programming tutorials and examples for all skill levels.</p>
+                    </div>
+
+                    <!-- Automate the Boring Stuff with Python -->
+                    <div class="item">
+                        <h3><a href="https://www.w3schools.com/c/index.php" target="_blank">
+                            <img src="https://cdn.knoji.com/images/logo/w3schools1.jpg?fit=contain&trim=true&flatten=true&extend=25&width=1200&height=630" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            www.w3school</a></h3>
+                        <p>W3Schools offers beginner-friendly C programming tutorials and examples.</p>
+                    </div>
+
+                    <!-- Fluent Python -->
+                    <div class="item">
+                        
+                        <h3><a href="https://devdocs.io/c/" target="_blank">
+                            <img src="https://th.bing.com/th/id/OIP.ePTCMK1xS2R_ob8R98xcjwHaD3?rs=1&pid=ImgDetMain" alt="owasp" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                            devdocs</a></h3>
+                        <p>DevDocs offers quick C programming documentation for reference.</p>
+                    </div>
+                </div>
+            </div>
+        </section>f
+    </main>
+
+    <!-- Modal for Video -->
+    <div id="videoModal" class="modal">
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+        <button onclick="closeModal()"
+            style="position: absolute; top: 20px; right: 20px; background: #ffffff; color: #000000; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Close</button>
+    </div>
+
+
+
+    <script>
+        // JavaScript to handle modal functionality
+        function openModal(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = videoUrl;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = ''; // Stop the video when closing
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

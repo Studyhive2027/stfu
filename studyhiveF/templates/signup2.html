@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up</title>
+    <style>
+       style>
+        /* From Uiverse.io by ammarsaa */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+            padding: 20px;
+            border-radius: 20px;
+            position: relative;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #333;
+            padding-right: 35px;
+            margin: 70px auto;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            transition:box-shadow 0.50s;
+        
+        }
+        .form:hover{
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 15px 10px;
+
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 30px;
+            color: #ffffff;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .title::before {
+            width: 18px;
+            height: 18px;
+        }
+
+        .title::after {
+            width: 18px;
+            height: 18px;
+            animation: pulse 1s linear infinite;
+        }
+
+        .title::before,
+        .title::after {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            left: 0px;
+            background-color: #ffffff;
+        }
+
+        .message,
+        .signin {
+            font-size: 14.5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .signin {
+            text-align: center;
+        }
+
+        .signin a:hover {
+            text-decoration: underline rgb(255, 255, 255);
+        }
+
+        .signin a {
+            color: #ffffff;
+        }
+
+        .flex {
+            display: flex;
+            width: 100%;
+            gap: 25px;
+        }
+
+        .form label {
+            position: relative;
+        }
+
+        .form label .input {
+            background-color: #333;
+            color: #fff;
+            width: 100%;
+            padding: 20px 05px 05px 10px;
+            outline: 0;
+            border: 1px solid rgba(105, 105, 105, 0.397);
+            border-radius: 10px;
+        }
+
+        .form label .input+span {
+            color: rgba(255, 255, 255, 0.5);
+            position: absolute;
+            left: 10px;
+            top: 0px;
+            font-size: 0.9em;
+            cursor: text;
+            transition: 0.3s ease;
+        }
+
+        .form label .input:placeholder-shown+span {
+            top: 12.5px;
+            font-size: 0.9em;
+        }
+
+        .form label .input:focus+span,
+        .form label .input:valid+span {
+            color: #ffffff;
+            top: 0px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .input {
+            font-size: medium;
+        }
+
+        .submit {
+            border: none;
+            outline: none;
+            padding: 10px;
+            border-radius: 10px;
+            color: #000000;
+            font-size: 16px;
+            transform: .3s ease;
+            background-color: #ffffff;
+            width: 150px;
+            margin: auto;
+            margin-top: 20px;
+
+        }
+
+        .submit:hover {
+            background-color: #ffffff96;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+
+            to {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.pinimg.com/originals/b1/8d/51/b18d5124d08c77a110323493464ff7ae.gif') no-repeat center center/cover;
+            z-index: -1;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <div class="background"></div>
+    <form id="signup-form" action="{{ url_for('signup') }}" method="POST" class="form">
+        <p class="title">Sign Up </p>
+        <p class="message">Sign up now and get full access to our app. </p>
+        
+        <label>
+            <input class="input" id="email" name="email" type="email" placeholder="" required>
+            <span>Email</span>
+        </label>
+        
+        <button type="button" id="send-otp" class="submit">Send OTP</button>
+        
+        <label id="otp-section" style="display: none;">
+            <input class="input" id="otp" name="otp" type="text" placeholder="" required>
+            <span>Enter OTP</span>
+        </label>
+        
+        <label>
+            <input class="input" name="username" type="text" placeholder="" required>
+            <span>Username</span>
+        </label>
+
+        <label>
+            <input class="input" name="password" type="password" placeholder="" required>
+            <span>Password</span>
+        </label>
+        <label>
+            <input class="input" name="confirm_password" type="password" placeholder="" required>
+            <span>Confirm password</span>
+        </label>
+        
+        <button class="submit" id="verify-otp" style="display: none;">Verify OTP</button>
+        <button class="submit" id="submit-signup" disabled>Submit</button>
+        
+        <p class="signin">Already have an account? <a href="{{ url_for('login') }}">Sign In</a> </p>
+    </form>
+
+    <script>
+        document.getElementById('send-otp').addEventListener('click', async function() {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                alert('Please enter your email first.');
+                return;
+            }
+
+            const response = await fetch('/send_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('OTP sent to your email!');
+                document.getElementById('otp-section').style.display = 'block';
+                document.getElementById('verify-otp').style.display = 'block';
+            } else {
+                alert('Failed to send OTP. Try again.');
+            }
+        });
+
+        document.getElementById('verify-otp').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const otp = document.getElementById('otp').value;
+            const email = document.getElementById('email').value;
+            
+            const response = await fetch('/verify_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('OTP verified! You can now complete signup.');
+                document.getElementById('submit-signup').disabled = false;
+            } else {
+                alert('Invalid OTP. Try again.');
+            }
+        });
+    </script>
+</body>
+
+</html>
